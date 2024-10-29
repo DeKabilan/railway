@@ -44,6 +44,7 @@ public class Filters {
 
 			}
 			currentArray = newArray;
+			System.out.println("current array: "+ currentArray);
 		}
 		if (arrival != "" || arrival != null) {
 			newArray = new ArrayList<Train>();
@@ -75,6 +76,7 @@ public class Filters {
 
 			}
 		}
+		System.out.println("new array: "+ newArray);
 		return newArray;
 	}
 }

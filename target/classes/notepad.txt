@@ -1,103 +1,16 @@
-package com.railway.handlers;
-
-import com.railway.dao.TrainsDAO;
-import com.railway.model.Ticket;
-import com.railway.model.Train;
+<label for="availableTrains">Select a Train:</label> <select
+				id="availableTrains" name="availableTrains" required>
+				<option value="">Select a Train</option>
 
 
-public class TicketHandler {
-	Ticket ticket = new Ticket();
-	TrainsDAO trainsdao = new TrainsDAO();
-	
-	public String getSeatNo(Ticket ticket) {
-		String result = "";
-		Train train = ticket.getTrain();
-		int ACseats = train.getACCompartmentNo()*train.getACCompartmentSeats();
-		int NONACseats = train.getNONACCompartmentNo()*train.getNONACCompartmentSeats();
-		if(ticket.getType().equals("ACseats")) {
-			int ticketNo = 1 + (ACseats - trainsdao.getSeats(ticket.getType(), train.getName()));
-			
-			switch(train.getSeatAlgorithm()) {
-			case("ODD_FIRST"):
-				int seat = (ticketNo*2)-1;
-				if(seat>ACseats) {
-					seat = (seat%ACseats)+1;
-				}
-				int compartmentNo = seat/train.getACCompartmentSeats();
-				int seatNo = seat%train.getACCompartmentSeats();
-				result = "AC-"+(1+compartmentNo)+"-"+seatNo;
-				break;			
-			case("EVEN_FIRST"):
-				seat = (ticketNo*2);
-				if(seat>ACseats) {
-					seat = (seat%ACseats)-1;
-				}
-				compartmentNo = seat/train.getACCompartmentSeats();
-				seatNo = seat%train.getACCompartmentSeats();
-				result = "AC-"+(1+compartmentNo)+"-"+seatNo;
-				break;
-			
-			case("ORDERED"):
-				seat = ticketNo;
-				compartmentNo = seat/train.getACCompartmentSeats();
-				seatNo = seat%train.getACCompartmentSeats();
-				result = "AC-"+(1+compartmentNo)+"-"+seatNo;
-				break;
-			case("SCATTERRED"):
-				seat = ticketNo;
-				compartmentNo = seat/train.getACCompartmentSeats();
-				seatNo = seat%train.getACCompartmentSeats();
-				result = "AC-"+(1+compartmentNo)+"-"+seatNo;
-				break;
-			default:
-				System.out.println("Nothing Happened");
-			}
-		}
-		else if(ticket.getType().equals("NONACseats")) {
-			int ticketNo = 1 + (NONACseats - trainsdao.getSeats(ticket.getType(), ticket.getTrainName()));
-			switch(train.getSeatAlgorithm()) {
-			
-			case("ODD_FIRST"):
-				int seat = (ticketNo*2)-1;
-				if(seat>NONACseats) {
-					seat = (seat%NONACseats)+1;
-				}
-				int compartmentNo = seat/train.getNONACCompartmentSeats();
-				int seatNo = seat%train.getNONACCompartmentSeats();
-				result = "NONAC-"+(1+compartmentNo)+"-"+seatNo;
-				break;			
-			case("EVEN_FIRST"):
-				seat = (ticketNo*2);
-				if(seat>NONACseats) {
-					seat = (seat%NONACseats)-1;
-				}
-				compartmentNo = seat/train.getNONACCompartmentSeats();
-				seatNo = seat%train.getNONACCompartmentSeats();
-				result = "NONAC-"+(1+compartmentNo)+"-"+seatNo;
-				break;
-			
-			case("ORDERED"):
-				seat = ticketNo;
-				compartmentNo = seat/train.getNONACCompartmentSeats();
-				seatNo = seat%train.getNONACCompartmentSeats();
-				result = "NONAC-"+(1+compartmentNo)+"-"+seatNo;
-				break;
-			case("SCATTERRED"):
-				seat = ticketNo;
-				compartmentNo = seat/train.getNONACCompartmentSeats();
-				seatNo = seat%train.getNONACCompartmentSeats();
-				result = "NONAC-"+(1+compartmentNo)+"-"+seatNo;
-				break;
-			default:
-				System.out.println("Nothing Happened");
-			}
-		}
-		return result;
-
-	}
-	
-	public void handleCreate() {
-		int cost = trainsdao.getRemainingSeats(ticket.getTrainName(), ticket.getType());
-		
-	}
-}
+				<%  for (Train train : trainList) {
+                	String name = train.getName();
+            %>
+				<option value="<%= name %>"><%= name %></option>
+				<% 
+           
+                } 
+            %>
+			</select>  <label for="numTravellers">No of Travellers:</label> <input
+				type="number" id="numTravellers" name="numTravellers" min="1"
+				max="5" required>

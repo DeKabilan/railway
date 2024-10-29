@@ -1,5 +1,6 @@
 <%@ page import="com.railway.model.Train"%>
 <%@ page import="com.railway.dao.TrainsDAO"%>
+<%@ page import="com.railway.utils.Filters"%>
 <%@ page import="java.util.ArrayList"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
@@ -50,42 +51,77 @@ input[type="submit"] {
 </style>
 </head>
 <body>
-	<%
-	ArrayList<Train> trainList = (ArrayList<Train>)session.getAttribute("trainList");
-	%>
 	<h1>Available Trains</h1>
 	<div id="trainOptions">
-		<form action="./book" method = "POST">
-
-			<label for="availableTrains">Select a Train:</label> <select
-				id="availableTrains" name="availableTrains" required>
-				<option value="">Select a Train</option>
-
-
-				<%  for (Train train : trainList) {
-                	String name = train.getName();
-            %>
-				<option value="<%= name %>"><%= name %></option>
-				<% 
-           
-                } 
-            %>
-			</select> <label for="compartment">Compartment:</label> <select
+		<form action="./search" method = "GET">
+			<label for="departureTime">Departure
+			Time:</label> <select id="departureTime" name="departureTime">
+			<option value="">Select Time</option>
+			<option value="Morning">Morning (6 AM - 12 PM)</option>
+			<option value="Afternoon">Afternoon (12 PM - 6 PM)</option>
+			<option value="Evening">Evening (6 PM - 12 AM)</option>
+			<option value="Night">Night (12 AM - 6 AM)</option>
+		</select> <label for="arrivalTime">Arrival Time:</label> <select
+			id="arrivalTime" name="arrivalTime">
+			<option value="">Select Time</option>
+			<option value="Morning">Morning (6 AM - 12 PM)</option>
+			<option value="Afternoon">Afternoon (12 PM - 6 PM)</option>
+			<option value="Evening">Evening (6 PM - 12 AM)</option>
+			<option value="Night">Night (12 AM - 6 AM)</option>
+		</select>
+		<label for="compartment">Compartment:</label> <select
 				id="compartment" name="compartment" required>
 				<option value="">Select Compartment</option>
 				<option value="ACseats">AC</option>
 				<option value="NONACseats">Non AC</option>
-			</select> <label for="numTravellers">No of Travellers:</label> <input
-				type="number" id="numTravellers" name="numTravellers" min="1"
-				max="5" required> <input type="submit" value="Book Train">
+			</select>
+			 <input type="submit" value="Filter Train">
 		</form>
 	</div>
+	    <table>
+        <thead>
+            <tr>
+                <th>Train Name</th>
+                <th>Source</th>
+                <th>Destination</th>
+                <th>Departure</th>
+                <th>Arrival</th>
+            </tr>
+        </thead>
+        <tbody>
+        <%
+            int pageno = 1; 
+            int amount = 5;
+            TrainsDAO trainsdao = new TrainsDAO();
+			Filters filters = new Filters();
+           	
+            ArrayList<Train> allTrains = (ArrayList<Train>)session.getAttribute("trainList");
+            ArrayList<Train> trainList = filters.additionalFilters(allTrains, request.getParameter("departureTime"), request.getParameter("arrivalTime"));
+            System.out.println(trainList);
+            System.out.println(allTrains);
+            System.out.println(request.getParameter("departureTime"));
+            
+            
+			%>
+			
 			<%
-		if(!(session.getAttribute("seatStatus") == null)){
-			out.println("<br>"+session.getAttribute("seatStatus"));
-			session.setAttribute("seatStatus",null);
-		}
-		%>
+            if (trainList != null && !trainList.isEmpty()) {
+                for (Train train : trainList) {
+                	
+        %>
+            <tr>
+                <td><%= train.getName() %></td>
+                <td><%= train.getSource() %></td>
+                 <td><%= train.getDestination() %></td>
+                <td><%= train.getDeparture() %></td>
+                <td><%= train.getArrival() %></td>
+            </tr>
+        <%
+                }
+            }
+        %>
+        </tbody>
+    </table>
 
 </body>
 </html>

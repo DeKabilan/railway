@@ -62,27 +62,15 @@ input[type="submit"] {
 			type="text" id="toStation" name="toStation"
 			placeholder="Enter to station" required> <label
 			for="travelDate">Date:</label> <input type="date" id="travelDate"
-			name="travelDate" required> <label for="departureTime">Departure
-			Time:</label> <select id="departureTime" name="departureTime">
-			<option value="">Select Time</option>
-			<option value="Morning">Morning (6 AM - 12 PM)</option>
-			<option value="Afternoon">Afternoon (12 PM - 6 PM)</option>
-			<option value="Evening">Evening (6 PM - 12 AM)</option>
-			<option value="Night">Night (12 AM - 6 AM)</option>
-		</select> <label for="arrivalTime">Arrival Time:</label> <select
-			id="arrivalTime" name="arrivalTime">
-			<option value="">Select Time</option>
-			<option value="Morning">Morning (6 AM - 12 PM)</option>
-			<option value="Afternoon">Afternoon (12 PM - 6 PM)</option>
-			<option value="Evening">Evening (6 PM - 12 AM)</option>
-			<option value="Night">Night (12 AM - 6 AM)</option>
-		</select> <input type="submit" value="Search Trains">
+			name="travelDate" required>
+			<input type="submit" value="Search Trains">
 	</form>
 	<%
 	TrainsDAO trainsdao = new TrainsDAO();
 	session.setAttribute("travelDate", (String)request.getParameter("travelDate"));
 	ArrayList<Train> trainList = trainsdao.searchTrain((String)request.getParameter("fromStation"), (String)request.getParameter("toStation"),
-	                		(String)request.getParameter("travelDate"), (String)request.getParameter("departureTime"), (String)request.getParameter("arrivalTime"));
+	                		(String)request.getParameter("travelDate"));
+	session.setAttribute("trainList", trainList);
 	%>
 	<%
 	if (trainList.size() != 0){

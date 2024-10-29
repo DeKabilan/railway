@@ -187,7 +187,7 @@ public class TrainsDAO {
     
    //---------Search Train-------------
     
-    public ArrayList<Train> searchTrain(String source, String destination, String dateString, String departure, String arrival){
+    public ArrayList<Train> searchTrain(String source, String destination, String dateString){
     	if(dateString == null || dateString.equals("")) {
     		return new ArrayList<Train>();
     	}
@@ -229,7 +229,7 @@ public class TrainsDAO {
     	catch(Exception e) {
     		System.out.println(e);
     	}
-    	return filter.additionalFilters(result, departure, arrival);
+    	return result;
     }
     
     
