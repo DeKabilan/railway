@@ -1,0 +1,417 @@
+[
+  {
+    "TRAIN_NAME": "PANDIAN EXPRESS",
+    "ROUTE": {
+      "SOURCE": "CHC",
+      "DESTINATION": "VPM",
+      "INTERMEDIATE": [
+        "PDY",
+        "TND",
+        "EGM"
+      ],
+      "DEPARTURE": "1000",
+      "ARRIVAL": "1500",
+      "PERIODICITY": [
+        "WED",
+        "SAT"
+      ],
+      "SEAT_ALLOCATION_ALGORITHM": "SCATTERRED",
+      "COMPARTMENTS": {
+        "TOTAL_NO_OF_COMPARTMENTS": "4",
+        "DETAILS": [
+          {
+            "COMPARTMENT_TYPE": "AC",
+            "NO_OF_SEATS": 100,
+            "NO_OF_COMPARTMENTS": 2,
+            "COST_PER_TICKET": 100
+          },
+          {
+            "COMPARTMENT_TYPE": "NON-AC",
+            "NO_OF_SEATS": 100,
+            "NO_OF_COMPARTMENTS": 2,
+            "COST_PER_TICKET": 200
+          }
+        ]
+      }
+    }
+  },
+  {
+    "TRAIN_NAME": "CHERAN EXPRESS",
+    "ROUTE": {
+      "SOURCE": "CHC",
+      "DESTINATION": "VPM",
+      "INTERMEDIATE": [
+        "PDY",
+        "EGM"
+      ],
+      "DEPARTURE": "1300",
+      "ARRIVAL": "1900",
+      "PERIODICITY": [
+        "WED"
+      ],
+      "SEAT_ALLOCATION_ALGORITHM": "ODD_FIRST",
+      "COMPARTMENTS": {
+        "TOTAL_NO_OF_COMPARTMENTS": "2",
+        "DETAILS": [
+          {
+            "COMPARTMENT_TYPE": "AC",
+            "NO_OF_SEATS": 200,
+            "NO_OF_COMPARTMENTS": 2,
+            "COST_PER_TICKET": 100
+          }
+        ]
+      }
+    }
+  },
+  {
+    "TRAIN_NAME": "CHOLAN EXPRESS",
+    "ROUTE": {
+      "SOURCE": "CHC",
+      "DESTINATION": "VPM",
+      "INTERMEDIATE": [
+        "PDY",
+        "EGM"
+      ],
+      "DEPARTURE": "2300",
+      "ARRIVAL": "0500",
+      "PERIODICITY": [
+        "SUN"
+      ],
+      "SEAT_ALLOCATION_ALGORITHM": "EVEN_FIRST",
+      "COMPARTMENTS": {
+        "TOTAL_NO_OF_COMPARTMENTS": "2",
+        "DETAILS": [
+          {
+            "COMPARTMENT_TYPE": "NON-AC",
+            "NO_OF_SEATS": 100,
+            "NO_OF_COMPARTMENTS": 2,
+            "COST_PER_TICKET": 500
+          }
+        ]
+      }
+    }
+  },
+  {
+    "TRAIN_NAME": "CMB EXPRESS",
+    "ROUTE": {
+      "SOURCE": "CHC",
+      "DESTINATION": "VPM",
+      "INTERMEDIATE": [
+        "PDY",
+        "TND",
+        "EGM",
+        "CNG"
+      ],
+      "DEPARTURE": "0600",
+      "ARRIVAL": "1200",
+      "PERIODICITY": [
+        "MON",
+        "TUE",
+        "WED",
+        "THU",
+        "FRI",
+        "SAT",
+        "SUN"
+      ],
+      "SEAT_ALLOCATION_ALGORITHM": "ORDERED",
+      "COMPARTMENTS": {
+        "TOTAL_NO_OF_COMPARTMENTS": "5",
+        "DETAILS": [
+          {
+            "COMPARTMENT_TYPE": "AC",
+            "NO_OF_SEATS": 200,
+            "NO_OF_COMPARTMENTS": 3,
+            "COST_PER_TICKET": 150
+          },
+          {
+            "COMPARTMENT_TYPE": "NON-AC",
+            "NO_OF_SEATS": 300,
+            "NO_OF_COMPARTMENTS": 2,
+            "COST_PER_TICKET": 80
+          }
+        ]
+      }
+    }
+  },
+  {
+    "TRAIN_NAME": "TRC EXPRESS",
+    "ROUTE": {
+      "SOURCE": "CMB",
+      "DESTINATION": "VPM",
+      "INTERMEDIATE": [
+        "MDR",
+        "PDY",
+        "TND"
+      ],
+      "DEPARTURE": "1400",
+      "ARRIVAL": "2000",
+      "PERIODICITY": [
+        "WED"
+      ],
+      "SEAT_ALLOCATION_ALGORITHM": "EVEN_FIRST",
+      "COMPARTMENTS": {
+        "TOTAL_NO_OF_COMPARTMENTS": "3",
+        "DETAILS": [
+          {
+            "COMPARTMENT_TYPE": "AC",
+            "NO_OF_SEATS": 400,
+            "NO_OF_COMPARTMENTS": 2,
+            "COST_PER_TICKET": 120
+          },
+          {
+            "COMPARTMENT_TYPE": "NON-AC",
+            "NO_OF_SEATS": 100,
+            "NO_OF_COMPARTMENTS": 1,
+            "COST_PER_TICKET": 60
+          }
+        ]
+      }
+    }
+  },
+  {
+    "TRAIN_NAME": "PDY LINK",
+    "ROUTE": {
+      "SOURCE": "CHC",
+      "DESTINATION": "VPM",
+      "INTERMEDIATE": [
+        "PDY",
+        "TND",
+        "EGM",
+        "CNG"
+      ],
+      "DEPARTURE": "1700",
+      "ARRIVAL": "2300",
+      "PERIODICITY": [
+        "SAT"
+      ],
+      "SEAT_ALLOCATION_ALGORITHM": "SCATTERRED",
+      "COMPARTMENTS": {
+        "TOTAL_NO_OF_COMPARTMENTS": "4",
+        "DETAILS": [
+          {
+            "COMPARTMENT_TYPE": "AC",
+            "NO_OF_SEATS": 300,
+            "NO_OF_COMPARTMENTS": 2,
+            "COST_PER_TICKET": 200
+          },
+          {
+            "COMPARTMENT_TYPE": "NON-AC",
+            "NO_OF_SEATS": 200,
+            "NO_OF_COMPARTMENTS": 2,
+            "COST_PER_TICKET": 90
+          }
+        ]
+      }
+    }
+  },
+  {
+    "TRAIN_NAME": "EGM PASS",
+    "ROUTE": {
+      "SOURCE": "TRC",
+      "DESTINATION": "CHC",
+      "INTERMEDIATE": [
+        "PDY",
+        "TND",
+        "EGM"
+      ],
+      "DEPARTURE": "0800",
+      "ARRIVAL": "1400",
+      "PERIODICITY": [
+        "SUN"
+      ],
+      "SEAT_ALLOCATION_ALGORITHM": "ODD_FIRST",
+      "COMPARTMENTS": {
+        "TOTAL_NO_OF_COMPARTMENTS": "2",
+        "DETAILS": [
+          {
+            "COMPARTMENT_TYPE": "AC",
+            "NO_OF_SEATS": 500,
+            "NO_OF_COMPARTMENTS": 1,
+            "COST_PER_TICKET": 180
+          },
+          {
+            "COMPARTMENT_TYPE": "NON-AC",
+            "NO_OF_SEATS": 300,
+            "NO_OF_COMPARTMENTS": 1,
+            "COST_PER_TICKET": 70
+          }
+        ]
+      }
+    }
+  },
+  {
+    "TRAIN_NAME": "CNG SERVICE",
+    "ROUTE": {
+      "SOURCE": "VPM",
+      "DESTINATION": "MDR",
+      "INTERMEDIATE": [
+        "EGM",
+        "CNG",
+        "PDY"
+      ],
+      "DEPARTURE": "0700",
+      "ARRIVAL": "1300",
+      "PERIODICITY": [
+        "FRI"
+      ],
+      "SEAT_ALLOCATION_ALGORITHM": "EVEN_FIRST",
+      "COMPARTMENTS": {
+        "TOTAL_NO_OF_COMPARTMENTS": "6",
+        "DETAILS": [
+          {
+            "COMPARTMENT_TYPE": "AC",
+            "NO_OF_SEATS": 600,
+            "NO_OF_COMPARTMENTS": 3,
+            "COST_PER_TICKET": 150
+          },
+          {
+            "COMPARTMENT_TYPE": "NON-AC",
+            "NO_OF_SEATS": 400,
+            "NO_OF_COMPARTMENTS": 3,
+            "COST_PER_TICKET": 80
+          }
+        ]
+      }
+    }
+  },
+  {
+    "TRAIN_NAME": "MDR LINK",
+    "ROUTE": {
+      "SOURCE": "CNG",
+      "DESTINATION": "TND",
+      "INTERMEDIATE": [
+        "PDY",
+        "VPM",
+        "EGM"
+      ],
+      "DEPARTURE": "0900",
+      "ARRIVAL": "1500",
+      "PERIODICITY": [
+        "TUE"
+      ],
+      "SEAT_ALLOCATION_ALGORITHM": "ORDERED",
+      "COMPARTMENTS": {
+        "TOTAL_NO_OF_COMPARTMENTS": "3",
+        "DETAILS": [
+          {
+            "COMPARTMENT_TYPE": "AC",
+            "NO_OF_SEATS": 250,
+            "NO_OF_COMPARTMENTS": 2,
+            "COST_PER_TICKET": 130
+          },
+          {
+            "COMPARTMENT_TYPE": "NON-AC",
+            "NO_OF_SEATS": 150,
+            "NO_OF_COMPARTMENTS": 1,
+            "COST_PER_TICKET": 75
+          }
+        ]
+      }
+    }
+  },
+  {
+    "TRAIN_NAME": "VPM EXPRESS",
+    "ROUTE": {
+      "SOURCE": "CMB",
+      "DESTINATION": "EGM",
+      "INTERMEDIATE": [
+        "MDR",
+        "PDY",
+        "TND"
+      ],
+      "DEPARTURE": "1500",
+      "ARRIVAL": "2100",
+      "PERIODICITY": [
+        "THU"
+      ],
+      "SEAT_ALLOCATION_ALGORITHM": "SCATTERRED",
+      "COMPARTMENTS": {
+        "TOTAL_NO_OF_COMPARTMENTS": "5",
+        "DETAILS": [
+          {
+            "COMPARTMENT_TYPE": "AC",
+            "NO_OF_SEATS": 400,
+            "NO_OF_COMPARTMENTS": 3,
+            "COST_PER_TICKET": 200
+          },
+          {
+            "COMPARTMENT_TYPE": "NON-AC",
+            "NO_OF_SEATS": 200,
+            "NO_OF_COMPARTMENTS": 2,
+            "COST_PER_TICKET": 100
+          }
+        ]
+      }
+    }
+  },
+  {
+    "TRAIN_NAME": "TND SPECIAL",
+    "ROUTE": {
+      "SOURCE": "VPM",
+      "DESTINATION": "MDR",
+      "INTERMEDIATE": [
+        "EGM",
+        "CNG",
+        "PDY"
+      ],
+      "DEPARTURE": "1600",
+      "ARRIVAL": "2200",
+      "PERIODICITY": [
+        "SUN"
+      ],
+      "SEAT_ALLOCATION_ALGORITHM": "ODD_FIRST",
+      "COMPARTMENTS": {
+        "TOTAL_NO_OF_COMPARTMENTS": "4",
+        "DETAILS": [
+          {
+            "COMPARTMENT_TYPE": "AC",
+            "NO_OF_SEATS": 500,
+            "NO_OF_COMPARTMENTS": 2,
+            "COST_PER_TICKET": 190
+          },
+          {
+            "COMPARTMENT_TYPE": "NON-AC",
+            "NO_OF_SEATS": 300,
+            "NO_OF_COMPARTMENTS": 2,
+            "COST_PER_TICKET": 85
+          }
+        ]
+      }
+    }
+  },
+  {
+    "TRAIN_NAME": "CNG EXPRESS",
+    "ROUTE": {
+      "SOURCE": "TND",
+      "DESTINATION": "CHC",
+      "INTERMEDIATE": [
+        "PDY",
+        "EGM",
+        "VPM"
+      ],
+      "DEPARTURE": "1100",
+      "ARRIVAL": "1700",
+      "PERIODICITY": [
+        "SAT"
+      ],
+      "SEAT_ALLOCATION_ALGORITHM": "SCATTERRED",
+      "COMPARTMENTS": {
+        "TOTAL_NO_OF_COMPARTMENTS": "4",
+        "DETAILS": [
+          {
+            "COMPARTMENT_TYPE": "AC",
+            "NO_OF_SEATS": 600,
+            "NO_OF_COMPARTMENTS": 2,
+            "COST_PER_TICKET": 160
+          },
+          {
+            "COMPARTMENT_TYPE": "NON-AC",
+            "NO_OF_SEATS": 400,
+            "NO_OF_COMPARTMENTS": 2,
+            "COST_PER_TICKET": 75
+          }
+        ]
+      }
+    }
+  }
+]
