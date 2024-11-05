@@ -1,6 +1,5 @@
 <%@ page import="com.railway.model.Train"%>
 <%@ page import="com.railway.dao.TrainsDAO"%>
-<%@ page import="com.railway.utils.Filters"%>
 <%@ page import="java.util.ArrayList"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
@@ -48,6 +47,19 @@ input[type="submit"] {
 	border: none;
 	cursor: pointer;
 }
+table {
+            width: 100%;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
 </style>
 </head>
 <body>
@@ -70,7 +82,7 @@ input[type="submit"] {
 			<option value="Night">Night (12 AM - 6 AM)</option>
 		</select>
 		<label for="compartment">Compartment:</label> <select
-				id="compartment" name="compartment" required>
+				id="compartment" name="compartment">
 				<option value="">Select Compartment</option>
 				<option value="ACseats">AC</option>
 				<option value="NONACseats">Non AC</option>
@@ -78,6 +90,14 @@ input[type="submit"] {
 			 <input type="submit" value="Filter Train">
 		</form>
 	</div>
+	        <%
+            TrainsDAO trainsdao = new TrainsDAO();	
+            ArrayList<Train> allTrains = (ArrayList<Train>)session.getAttribute("trainList");
+            ArrayList<Train> trainList = trainsdao.additionalFilters((String)session.getAttribute("source"), (String)session.getAttribute("destination"),
+            		request.getParameter("departureTime"), request.getParameter("arrivalTime"), request.getParameter("compartment"), (String)session.getAttribute("date"));
+            if (trainList != null && !trainList.isEmpty()) {
+            
+			%>
 	    <table>
         <thead>
             <tr>
@@ -86,26 +106,15 @@ input[type="submit"] {
                 <th>Destination</th>
                 <th>Departure</th>
                 <th>Arrival</th>
+                <th>AC Seats Left</th>
+                <th>NON AC Seats Left</th>
             </tr>
         </thead>
         <tbody>
-        <%
-            int pageno = 1; 
-            int amount = 5;
-            TrainsDAO trainsdao = new TrainsDAO();
-			Filters filters = new Filters();
-           	
-            ArrayList<Train> allTrains = (ArrayList<Train>)session.getAttribute("trainList");
-            ArrayList<Train> trainList = filters.additionalFilters(allTrains, request.getParameter("departureTime"), request.getParameter("arrivalTime"));
-            System.out.println(trainList);
-            System.out.println(allTrains);
-            System.out.println(request.getParameter("departureTime"));
-            
-            
-			%>
+
 			
 			<%
-            if (trainList != null && !trainList.isEmpty()) {
+            
                 for (Train train : trainList) {
                 	
         %>
@@ -115,13 +124,41 @@ input[type="submit"] {
                  <td><%= train.getDestination() %></td>
                 <td><%= train.getDeparture() %></td>
                 <td><%= train.getArrival() %></td>
+                <td><%= trainsdao.getSeats("ACseats",train.getName()) %></td>
+                <td><%= trainsdao.getSeats("NONACseats",train.getName()) %></td>
             </tr>
         <%
                 }
+		%>
+        </tbody>
+    	</table>
+    			<br>
+			<form action="./book" method = "POST">
+			<label for="train">Trains:</label>
+			<select id="train" name="train" required>
+			<option value="">Select Time</option>
+			<%
+            
+                for (Train train : trainList) {
+                	
+        %>
+                <option value="<%= train.getName() %>"><%= train.getName() %></option>
+
+
+        <%
+                }
+			%>
+		</select> 
+			<label for="numOfTravelers">No Of Travelers:</label>
+			<input type="number" id="numOfTravelers" name="numOfTravelers" min = 1 max = 5 required>
+			 <input type="submit" value="Select Train">
+		</form>
+		<%
+            }
+            else{
+            	out.println("<br> No Trains Fround");
             }
         %>
-        </tbody>
-    </table>
 
 </body>
 </html>

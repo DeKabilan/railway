@@ -52,9 +52,10 @@ input[type="submit"] {
 <body>
 	<h1>Book Tickets</h1>
 	<div id="trainOptions">
-		<form action="./ticket" method = "POST">
+		<form action="./cost" method = "POST">
 			<%
-			for(Integer i = 0; i<(Integer)session.getAttribute("seats");i++){
+			Train train = (Train)session.getAttribute("train");
+			for(Integer i = 0; i<Integer.parseInt((String)session.getAttribute("seats"));i++){
 			out.println("<h2>Ticket "+(i+1)+"</h2>");
 			%>
 			<label for="name<%=i%>">Name:</label> 
@@ -62,10 +63,26 @@ input[type="submit"] {
 			<label for="age<%=i%>">Age:</label> 
 			<input type="number" id="age<%=i%>" name="age<%=i%>" min="1" max="100" required> 
 			<label for="email<%=i%>">Email:</label> 
-			<input type="email" id="email<%=i%>" name="email<%=i%>"> <br><br>
+			<input type="email" id="email<%=i%>" name="email<%=i%>"> <br>
+			<label for="compartment<%=i%>">Compartment:</label> <select
+				id="compartment<%=i%>" name="compartment<%=i%>" required>
+				<option value="">Select Compartment</option>
+				<%
+				if(train.getACCompartmentNo()!=0){
+				%>
+				<option value="ACseats">AC</option>
+				<%
+				}
+				if(train.getNONACCompartmentNo()!=0){
+				%>
+				<option value="NONACseats">Non AC</option>
+				<%
+				}
+				%>
+			</select>
 			<%
 			}%>
-			<input type="submit" value="Create Ticket">
+			<input type="submit" value="Calculate Cost">
 		</form>
 	</div>
 

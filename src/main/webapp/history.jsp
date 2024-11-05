@@ -1,6 +1,6 @@
 <%@ page import="java.util.ArrayList" %>
-<%@ page import="com.railway.model.Train" %>
-<%@ page import="com.railway.dao.TrainsDAO" %>
+<%@ page import="com.railway.model.TicketBatch" %>
+<%@ page import="com.railway.dao.TicketsDAO" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
 <!DOCTYPE html>
@@ -43,58 +43,58 @@
     </style>
 </head>
 <body>
-    <h2>Station List</h2>
-    <a href="./train">Back to Admin Page</a>
-    <a href="./user">Back to User Page</a>
-    <a href="./trainview.jsp?amount=5">5</a>
-    <a href="./trainview.jsp?amount=5">10</a>
-    <a href="./trainview.jsp?amount=5">50</a>
+    <h2>Ticket List</h2>
+    <a href="./user">Back to Dashboard</a>
+    
     <table>
         <thead>
             <tr>
-                <th>Train Name</th>
+                <th>Train</th>
+                <th>Passengers</th>
+                <th>Cost</th>
                 <th>Source</th>
                 <th>Destination</th>
-                <th>Departure</th>
-                <th>Arrival</th>
+                <th>Book Date</th>
+                <th>Travel Date</th>
+                <th>View Ticket</th>
             </tr>
         </thead>
         <tbody>
         <%
             int pageno = 1; 
             int amount = 5;
-            TrainsDAO trainsdao = new TrainsDAO();
+            TicketsDAO ticketsdao = new TicketsDAO();
 
             if (request.getParameter("page") != null) {
                 pageno = Integer.parseInt(request.getParameter("page"));
             }
-            if (request.getParameter("amount") != null) {
-                pageno = Integer.parseInt(request.getParameter("amount"));
-            }
 
-            ArrayList<Train> trainList = trainsdao.getPage((pageno - 1) * amount, amount);
+            ArrayList<TicketBatch> ticketBatchList = ticketsdao.getPage((String)session.getAttribute("userName"),(pageno - 1) * amount, amount);
             
             out.println((pageno - 1) * amount + " - " + 
-                        Math.min(pageno * amount, trainsdao.getAmountOfData()) + 
-                        " of " + trainsdao.getAmountOfData());
+                        Math.min(pageno * amount, ticketsdao.getAmountOfData()) + 
+                        " of " + ticketsdao.getAmountOfData());
 			%>
 			
 			<%
-            if (trainList != null && !trainList.isEmpty()) {
-                for (Train train : trainList) {
+            if (ticketBatchList != null && !ticketBatchList.isEmpty()) {
+                for (TicketBatch ticket : ticketBatchList) {
                 	
         %>
             <tr>
-                <td><%= train.getName() %></td>
-                <td><%= train.getSource() %></td>
-                 <td><%= train.getDestination() %></td>
-                <td><%= train.getDeparture() %></td>
-                <td><%= train.getArrival() %></td>
+                <td><%= ticket.getTrain() %></td>
+                <td><%= ticket.getTickets().size() %></td>
+                <td><%= ticket.getCost() %></td>
+                <td><%= ticket.getSource() %></td>
+                 <td><%= ticket.getDestination() %></td>
+                <td><%= ticket.getBookDate() %></td>
+                <td><%= ticket.getTravelDate() %></td>
+                 <td> <a href="ticketview.jsp?groupid=<%=ticket.getBatchID()%>">View Ticket</a></td>
             </tr>
         <%
                 }
             }
-            int totalRecords = trainsdao.getAmountOfData();
+            int totalRecords = ticketsdao.getAmountOfData();
             int totalPages = (int) Math.ceil(totalRecords * 1.0 / amount);
         %>
         </tbody>
@@ -104,19 +104,19 @@
         <%
             if (pageno > 1) {
         %>
-            <a href="trainview.jsp?page=<%= pageno - 1 %>">Previous</a>
+            <a href="history.jsp?page=<%= pageno - 1 %>">Previous</a>
         <%
             }
 
             for (int i = 1; i <= totalPages; i++) {
         %>
-            <a href="trainview.jsp?page=<%= i %>"><%= i %></a> 
+            <a href="history.jsp?page=<%= i %>&"><%= i %></a> 
         <%
             }
 
             if (pageno < totalPages) { 
         %>
-            <a href="trainview.jsp?page=<%= pageno + 1 %>">Next</a>
+            <a href="history.jsp?page=<%= pageno + 1 %>">Next</a>
         <%
             }
         %>

@@ -10,10 +10,8 @@ import java.util.ArrayList;
 
 import com.railway.decorator.JSONDecorator;
 import com.railway.model.Train;
-import com.railway.utils.Filters;
 
 public class TrainsDAO {
-	Filters filter = new Filters();
 	
 	//------------Get Train as Model from DB------------
 	
@@ -303,8 +301,8 @@ public class TrainsDAO {
 			pst7.setInt(5, TrainObject.getNONACCompartmentCost());
 			pst7.addBatch();
 			pst7.executeBatch();
-			Integer ACseats =TrainObject.getACCompartmentNo()*TrainObject.getACCompartmentCost();
-			Integer NONACseats =TrainObject.getNONACCompartmentNo()*TrainObject.getNONACCompartmentCost();
+			Integer ACseats =TrainObject.getACCompartmentNo()*TrainObject.getACCompartmentSeats();
+			Integer NONACseats =TrainObject.getNONACCompartmentNo()*TrainObject.getNONACCompartmentSeats();
 			query = "INSERT INTO Seats (TrainID, ACseats, NONACseats) VALUES (?,?,?);";
 			PreparedStatement pst8 = con.prepareStatement(query);
 			pst8.setInt(1, TrainID);
@@ -514,6 +512,124 @@ public class TrainsDAO {
 	       }
 		catch(Exception e) {
 			System.out.println(e);
+		}
+	}
+	
+	
+	
+	public ArrayList<Train> additionalFilters(String source, String destination, String departure, String arrival, String compartment, String dateString) {
+		ArrayList<Train> result = new ArrayList<>();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate date = LocalDate.parse(dateString, formatter);
+        String dayOfWeek = date.getDayOfWeek().name().substring(0,3);
+        try {
+        	Class.forName("com.mysql.cj.jdbc.Driver");
+ 	       Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/IRTC", "dekabilan", "password");
+        	StringBuilder query = new StringBuilder("SELECT DISTINCT TrainName, Departure, Arrival FROM\n"
+        			+ "(WITH combination as (SELECT Trains.TrainID , TrainName, Routes.RouteID, Source, Destination, Arrival, Departure FROM Trains Join Routes on Trains.TrainID = Routes.RouteID)\n"
+        			+ "SELECT TrainName, combination.RouteID, Source, Destination,Isource,Idestination, Departure, Arrival FROM combination JOIN \n"
+        			+ "(SELECT s1.Stopcode as Isource, s1.RouteID, s2.StopCode as Idestination FROM Stops as s1 JOIN Stops s2 ON s1.RouteID = s2.RouteID WHERE s1.Sequence < s2.Sequence) as intermediate\n"
+        			+ "ON combination.RouteID = intermediate.RouteID) result \n"
+        			+ "WHERE ((Source = ? and Destination = ?) or (Source = ? and Isource = ? ) or (Source = ? and Idestination = ?) or (Isource = ? and Idestination = ?))");
+        	
+        	
+        	if (departure != null && !departure.isEmpty()) {
+        		switch (departure) {
+        		case "Morning":
+        			query.append(" AND (Departure>=0600 AND Departure <1200)");
+        			break;
+        		case "Afternoon":
+        			query.append(" AND (Departure>=1200 AND Departure <1800)");
+        			break;
+        		case "Evening":
+        			query.append(" AND (Departure>=1800 AND Departure <2400)");
+        			break;
+        		case "Night":
+        			query.append(" AND (Departure>=0000 AND Departure <0600)");
+        			break;
+        		default:
+        			break;
+        		}
+        	}
+        	
+        	
+        	if (arrival != null && !arrival.isEmpty()) {
+        		switch (arrival) {
+        		case "Morning":
+        			query.append(" AND (Arrival>=0600 AND Arrival <1200)");
+        			break;
+        		case "Afternoon":
+        			query.append(" AND (Arrival>=1200 AND Arrival <1800)");
+        			break;
+        		case "Evening":
+        			query.append(" AND (Arrival>=1800 AND Arrival <2400)");
+        			break;
+        		case "Night":
+        			query.append(" AND (Arrivall>=0000 AND Arrival <0600)");
+        			break;
+        		default:
+        			break;
+        		}
+        		
+        	}
+        	
+        	PreparedStatement pst = con.prepareStatement(query.toString());
+    		pst.setString(1, source);
+    		pst.setString(2, destination);
+    		pst.setString(3, source);
+    		pst.setString(4, destination);
+    		pst.setString(5, source);
+    		pst.setString(6, destination);
+    		pst.setString(7, source);
+    		pst.setString(8, destination);
+        	ResultSet rs = pst.executeQuery();
+        	if (compartment != null && !compartment.isEmpty()) {
+        		while(rs.next()) {
+        			Train train = this.getTrain(rs.getString("TrainName"));
+        			switch (compartment) {
+    				case "ACseats":
+    					if(train.getACCompartmentNo()!=0) {
+    						for(String days : train.getPeriodicity()) {
+    		    				if(days.equals(dayOfWeek)) {
+    		    					result.add(train);
+    		    				}
+    						}
+    					}
+    						
+    					break;
+    				case "NONACseats":
+    					if(train.getNONACCompartmentNo()!=0) {
+    						for(String days : train.getPeriodicity()) {
+    		    				if(days.equals(dayOfWeek)) {
+    		    					result.add(train);
+    		    				}
+    						}
+    					}
+    						
+    					break;
+    				default:
+    					break;
+    				}
+        			
+        		}
+        		return result;
+        		
+        		
+        	}
+        while(rs.next()) {
+        	Train train = this.getTrain(rs.getString("TrainName"));
+        	for(String days : train.getPeriodicity()) {
+				if(days.equals(dayOfWeek)) {
+					result.add(train);
+				}
+			}
+        }
+        return result;
+        	
+        }
+		catch(Exception e){
+			System.out.println(e);
+			return null;
 		}
 	}
 }

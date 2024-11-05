@@ -151,24 +151,5 @@ public class StationsDAO {
 		return result;
 	}
 
-	public ArrayList<Station> getAllStations() {
-		ArrayList<Station> result = new ArrayList<Station>();
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/IRTC", "dekabilan", "password");
-			Statement st = con.createStatement();
-			ResultSet rs = st.executeQuery("SELECT * FROM Stations");
-			while (rs.next()) {
-				Station station = new Station();
-				station.setCode(rs.getString("Code"));
-				station.setCode(rs.getString("Name"));
-				result.add(station);
 
-			}
-
-		} catch (Exception e) {
-			System.out.println(e);
-		}
-		return result;
-	}
 }
