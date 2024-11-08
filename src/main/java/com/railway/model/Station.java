@@ -1,8 +1,8 @@
 package com.railway.model;
 
 public class Station {
-	public String code = "null";
-	public String name;
+	public String code = "";
+	public String name="";
 	public String message = "";
 	
 	public String getMessage() {

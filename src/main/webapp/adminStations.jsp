@@ -70,7 +70,7 @@ input[type="submit"] {
 <p>
     <%
         Station station = (Station) session.getAttribute("Station");
-        if (station.getCode() == "null") {
+        if (station.getCode() == "") {
             out.println(station.getMessage());
             session.setAttribute("Station", new Station());
         } else {

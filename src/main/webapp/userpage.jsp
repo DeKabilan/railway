@@ -63,15 +63,15 @@ input[type="submit"] {
 			required> <label for="toStation">To Station:</label> <input
 			type="text" id="toStation" name="toStation"
 			placeholder="Enter to station" required> <label
-			for="travelDate">Date:</label> <input type="date" id="travelDate"
-			name="travelDate" required>
+			for="travelDate">Date:</label> 
+			<input type="date" id="travelDate" name="travelDate" value ="<%=(String)session.getAttribute("today") %>" required min = "<%=(String)session.getAttribute("today") %>">
 			<input type="submit" value="Search Trains">
 	</form>
 	<%
 	TrainsDAO trainsdao = new TrainsDAO();
 	session.setAttribute("travelDate", (String)request.getParameter("travelDate"));
 	ArrayList<Train> trainList = trainsdao.searchTrain((String)request.getParameter("fromStation"), (String)request.getParameter("toStation"),
-	                		(String)request.getParameter("travelDate"));
+	                		(String)request.getParameter("travelDate"),(String)session.getAttribute("today"),(Integer)session.getAttribute("hour"));
 	session.setAttribute("source",(String)request.getParameter("fromStation"));
 	session.setAttribute("destination",(String)request.getParameter("toStation"));
 	session.setAttribute("trainList", trainList);

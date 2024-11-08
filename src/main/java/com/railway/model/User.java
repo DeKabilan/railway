@@ -1,7 +1,7 @@
 package com.railway.model;
 public class User {
-	String email;
-	String password;
+	String email="";
+	String password="";
 	String role= "null";
 	public String getEmail() {
 		return email;

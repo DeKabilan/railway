@@ -25,14 +25,12 @@ public class UserServlet extends HttpServlet {
 		HttpSession session = request.getSession();
 		TrainsDAO trainsdao = new TrainsDAO();
 		TicketsDAO ticketsdao = new TicketsDAO();
-		if(!((String)session.getAttribute("userRole")).equals("user")) {
+		if(!(((String)session.getAttribute("userRole")).equals("user"))) {
 			RequestDispatcher rd = request.getRequestDispatcher("errornoaccess.jsp");
 			rd.forward(request, response);
 			return;
 		}
-		response.getWriter().append("Served at: ").append(request.getContextPath());
 		String path = (String)request.getServletPath();
-		System.out.println(path);
 		if(path.equals("/cancel")) {
 			trainsdao.updateSeats("NONACseats", ((Train)session.getAttribute("train")).getName(),((Integer)session.getAttribute("oldnonac")) );
 			trainsdao.updateSeats("ACseats", ((Train)session.getAttribute("train")).getName(),(Integer)session.getAttribute("oldac"));

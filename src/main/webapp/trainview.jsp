@@ -44,11 +44,20 @@
 </head>
 <body>
     <h2>Station List</h2>
-    <a href="./train">Back to Admin Page</a>
-    <a href="./user">Back to User Page</a>
-    <a href="./trainview.jsp?amount=5">5</a>
-    <a href="./trainview.jsp?amount=5">10</a>
-    <a href="./trainview.jsp?amount=5">50</a>
+    <%
+    if(((String)session.getAttribute("userRole")).equals("admin")){
+    %>
+    <a href="./train">Back</a>
+    <%
+    }
+    else if(((String)session.getAttribute("userRole")).equals("user")){
+    	%>
+    <a href="./user">Back</a>
+    	
+    	<%
+    }
+    %>
+    	
     <table>
         <thead>
             <tr>

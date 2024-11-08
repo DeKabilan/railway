@@ -50,6 +50,17 @@ public class SearchingServlet extends HttpServlet {
 		}
 		if(path.equals("/book")) {
 			Train train = trainsdao.getTrain((String)request.getParameter("train"));
+			
+			if((trainsdao.getSeats((String)request.getParameter("compartment"),train.getName())<
+					Integer.parseInt(request.getParameter("numOfTravelers")))) {
+				
+					
+					session.setAttribute("seatmessage", "<br>No Seat Left");
+					RequestDispatcher rd = request.getRequestDispatcher("search.jsp");
+					rd.forward(request, response);
+					return;				
+			}
+			session.setAttribute("ticketType",(String)request.getParameter("compartment"));
 			session.setAttribute("train",train);
 			session.setAttribute("seats", request.getParameter("numOfTravelers"));
 

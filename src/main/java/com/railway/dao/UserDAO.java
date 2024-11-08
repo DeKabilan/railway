@@ -16,7 +16,6 @@ public class UserDAO {
 			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/IRTC","dekabilan","password");
 			Statement st = con.createStatement();
 			ResultSet rs = st.executeQuery("SELECT * FROM Users WHERE Email = \'"+email+"\'");
-			System.out.println(rs);
 			if(rs.next()) {
 				userFromDB.setEmail(rs.getString("Email"));
 				if(rs.getInt("Role") == 0) {
@@ -52,7 +51,6 @@ public class UserDAO {
 		catch(Exception e){
 			System.out.println(e);
 		}
-		System.out.println("End");
 		return false;
 	}
 	
@@ -63,7 +61,6 @@ public class UserDAO {
 			Class.forName("com.mysql.jdbc.Driver");
 			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/IRTC","dekabilan","password");
 			Statement st = con.createStatement();
-			System.out.println("INSERT INTO Users (Email,Password,Role) VALUES (\""+email+"\",\""+ pass+"\", 1)");
 			st.execute("INSERT INTO Users (Email,Password,Role) VALUES (\""+email+"\",\""+ pass+"\", 1)");
 		}
 		catch(Exception e) {

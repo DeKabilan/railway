@@ -64,6 +64,7 @@ table {
 </head>
 <body>
 	<h1>Available Trains</h1>
+	<a href="./user">Back</a>
 	<div id="trainOptions">
 		<form action="./search" method = "GET">
 			<label for="departureTime">Departure
@@ -92,9 +93,9 @@ table {
 	</div>
 	        <%
             TrainsDAO trainsdao = new TrainsDAO();	
-            ArrayList<Train> allTrains = (ArrayList<Train>)session.getAttribute("trainList");
             ArrayList<Train> trainList = trainsdao.additionalFilters((String)session.getAttribute("source"), (String)session.getAttribute("destination"),
-            		request.getParameter("departureTime"), request.getParameter("arrivalTime"), request.getParameter("compartment"), (String)session.getAttribute("date"));
+            		request.getParameter("departureTime"), request.getParameter("arrivalTime"), request.getParameter("compartment"), (String)session.getAttribute("date"),
+            		(String)session.getAttribute("today"),(Integer)session.getAttribute("hour"));
             if (trainList != null && !trainList.isEmpty()) {
             
 			%>
@@ -151,9 +152,21 @@ table {
 		</select> 
 			<label for="numOfTravelers">No Of Travelers:</label>
 			<input type="number" id="numOfTravelers" name="numOfTravelers" min = 1 max = 5 required>
+			 <label for="compartment">Compartment:</label>
+			  <select id="compartment" name="compartment" required>
+				<option value="">Select Compartment</option>
+
+				<option value="ACseats">AC</option>
+
+				<option value="NONACseats">Non AC</option>
+			</select>
 			 <input type="submit" value="Select Train">
 		</form>
-		<%
+		<%	
+			if(((String)session.getAttribute("seatmessage"))!=null){
+				out.println(session.getAttribute("seatmessage"));
+			}
+			session.setAttribute("seatmessage","");
             }
             else{
             	out.println("<br> No Trains Fround");

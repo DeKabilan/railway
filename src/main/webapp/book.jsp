@@ -54,6 +54,7 @@ input[type="submit"] {
 	<div id="trainOptions">
 		<form action="./cost" method = "POST">
 			<%
+			TrainsDAO trainsdao = new TrainsDAO();
 			Train train = (Train)session.getAttribute("train");
 			for(Integer i = 0; i<Integer.parseInt((String)session.getAttribute("seats"));i++){
 			out.println("<h2>Ticket "+(i+1)+"</h2>");
@@ -64,22 +65,7 @@ input[type="submit"] {
 			<input type="number" id="age<%=i%>" name="age<%=i%>" min="1" max="100" required> 
 			<label for="email<%=i%>">Email:</label> 
 			<input type="email" id="email<%=i%>" name="email<%=i%>"> <br>
-			<label for="compartment<%=i%>">Compartment:</label> <select
-				id="compartment<%=i%>" name="compartment<%=i%>" required>
-				<option value="">Select Compartment</option>
-				<%
-				if(train.getACCompartmentNo()!=0){
-				%>
-				<option value="ACseats">AC</option>
-				<%
-				}
-				if(train.getNONACCompartmentNo()!=0){
-				%>
-				<option value="NONACseats">Non AC</option>
-				<%
-				}
-				%>
-			</select>
+			
 			<%
 			}%>
 			<input type="submit" value="Calculate Cost">

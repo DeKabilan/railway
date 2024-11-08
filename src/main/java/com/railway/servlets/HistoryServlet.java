@@ -8,6 +8,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 @WebServlet("/history")
 public class HistoryServlet extends HttpServlet {
@@ -15,6 +16,12 @@ public class HistoryServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.getWriter().append("Served at: ").append(request.getContextPath());
+		HttpSession session = request.getSession();
+		if(!((String)session.getAttribute("userRole") == "user")) {
+			RequestDispatcher rd = request.getRequestDispatcher("errornoaccess.jsp");
+			rd.forward(request, response);
+			return;
+		}
 		RequestDispatcher rd = request.getRequestDispatcher("history.jsp");
 		rd.forward(request, response);
 		return;

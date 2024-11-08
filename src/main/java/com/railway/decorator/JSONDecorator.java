@@ -11,7 +11,7 @@ import org.json.simple.parser.JSONParser;
 import com.railway.model.Train; 
 
 public class JSONDecorator {
-	public JSONArray JSONtoArray(String path) {
+	public JSONArray stationstoArray(String path) {
 		JSONParser jsonParser = new JSONParser();
 		try(FileReader reader = new FileReader(path)) {
 			Object obj = jsonParser.parse(reader);

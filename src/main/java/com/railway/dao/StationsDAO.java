@@ -22,7 +22,7 @@ public class StationsDAO {
 			Class.forName("com.mysql.jdbc.Driver");
 			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/IRTC", "dekabilan", "password");
 			Statement st = con.createStatement();
-			ResultSet rs = st.executeQuery("SELECT * FROM Stations WHERE Code = \'" + code + "\'");
+			ResultSet rs = st.executeQuery("SELECT * FROM Stations WHERE Code = \'" + code + "\' OR Name = \""+code+"\"");
 			System.out.println(rs);
 			if (rs.next()) {
 				stationFromDB.setCode(rs.getString("Code"));
@@ -36,7 +36,7 @@ public class StationsDAO {
 	}
 
 	public void JSONtoDB(String path) {
-		JSONArray array = json.JSONtoArray(path);
+		JSONArray array = json.stationstoArray(path);
 
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
@@ -62,7 +62,7 @@ public class StationsDAO {
 			Class.forName("com.mysql.jdbc.Driver");
 			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/IRTC", "dekabilan", "password");
 			Statement st = con.createStatement();
-			ResultSet rs = st.executeQuery("SELECT * FROM Stations WHERE Code = \'" + code + "\'");
+			ResultSet rs = st.executeQuery("SELECT * FROM Stations WHERE Code = \'" + code + "\' OR Name = \""+code+"\"");
 			if (rs.next()) {
 				return true;
 			} else
@@ -132,7 +132,7 @@ public class StationsDAO {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/IRTC", "dekabilan", "password");
-			String query = "SELECT * FROM Stations ORDER BY Code LIMIT ? OFFSET ?";
+			String query = "SELECT * FROM Stations ORDER BY Name LIMIT ? OFFSET ?";
 			PreparedStatement ps = con.prepareStatement(query);
 			ps.setInt(1, amount);
 			ps.setInt(2, pageno);

@@ -185,7 +185,7 @@ public class TrainsDAO {
     
    //---------Search Train-------------
     
-    public ArrayList<Train> searchTrain(String source, String destination, String dateString){
+    public ArrayList<Train> searchTrain(String source, String destination, String dateString, String today, int hour){
     	if(dateString == null || dateString.equals("")) {
     		return new ArrayList<Train>();
     	}
@@ -197,14 +197,25 @@ public class TrainsDAO {
     	try {
 			Class.forName("com.mysql.jdbc.Driver");
 			con = DriverManager.getConnection("jdbc:mysql://localhost:3306/IRTC","dekabilan","password");
-    		String query = "SELECT DISTINCT TrainName FROM\n"
-    				+ "(WITH combination as (SELECT Trains.TrainID , TrainName, Routes.RouteID, Source, Destination, Arrival, Departure FROM Trains Join Routes on Trains.TrainID = Routes.RouteID)\n"
-    				+ "SELECT TrainName, combination.RouteID, Source, Destination,Isource,Idestination, Departure, Arrival FROM combination JOIN \n"
-    				+ "(SELECT s1.Stopcode as Isource, s1.RouteID, s2.StopCode as Idestination FROM Stops as s1 JOIN Stops s2 ON s1.RouteID = s2.RouteID WHERE s1.Sequence < s2.Sequence) as intermediate\n"
-    				+ "ON combination.RouteID = intermediate.RouteID) result \n"
-    				+ "WHERE ((Source = ? and Destination = ?) or (Source = ? and Isource = ? ) or (Source = ? and Idestination = ?) or (Isource = ? and Idestination = ?));";
+			StringBuilder query = new StringBuilder("SELECT DISTINCT TrainName, Departure, Arrival FROM\n"
+					+ "(WITH combination as (SELECT Trains.TrainID , TrainName, Routes.RouteID, Source, Destination, Arrival, Departure FROM Trains Join Routes on Trains.TrainID = Routes.TrainID)\n"
+					+ "SELECT TrainName, combination.RouteID, Source, Destination,Isource,Idestination, Departure, Arrival FROM combination JOIN \n"
+					+ "(SELECT s1.Stopcode as Isource, s1.RouteID, s2.StopCode as Idestination FROM Stops as s1 JOIN Stops s2 ON s1.RouteID = s2.RouteID WHERE s1.Sequence < s2.Sequence) as intermediate\n"
+					+ "ON combination.RouteID = intermediate.RouteID) result \n"
+					+ "WHERE ((Source = ? and Destination = ?) or (Source = ? and Isource = ? ) or (Source = ? and Idestination = ?) or (Isource = ? and Idestination = ?))");
+			if(dateString.equals(today)) {
+				if(hour>6) {
+					query.append(" AND Departure>\"06:00\"");
+				}
+				else if(hour>12) {
+					query.append(" AND Departure>\"12:00\"");
+				}
+				else if(hour>16) {
+					query.append(" AND Departure>\"16:00\"");
+				}
+			}
     		
-    		PreparedStatement ps = con.prepareStatement(query);
+			PreparedStatement ps = con.prepareStatement(query.toString());
     		ps.setString(1, source);
     		ps.setString(2, destination);
     		ps.setString(3, source);
@@ -517,7 +528,7 @@ public class TrainsDAO {
 	
 	
 	
-	public ArrayList<Train> additionalFilters(String source, String destination, String departure, String arrival, String compartment, String dateString) {
+	public ArrayList<Train> additionalFilters(String source, String destination, String departure, String arrival, String compartment, String dateString, String today, int hour) {
 		ArrayList<Train> result = new ArrayList<>();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate date = LocalDate.parse(dateString, formatter);
@@ -526,26 +537,37 @@ public class TrainsDAO {
         	Class.forName("com.mysql.cj.jdbc.Driver");
  	       Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/IRTC", "dekabilan", "password");
         	StringBuilder query = new StringBuilder("SELECT DISTINCT TrainName, Departure, Arrival FROM\n"
-        			+ "(WITH combination as (SELECT Trains.TrainID , TrainName, Routes.RouteID, Source, Destination, Arrival, Departure FROM Trains Join Routes on Trains.TrainID = Routes.RouteID)\n"
+        			+ "(WITH combination as (SELECT Trains.TrainID , TrainName, Routes.RouteID, Source, Destination, Arrival, Departure FROM Trains Join Routes on Trains.TrainID = Routes.TrainID)\n"
         			+ "SELECT TrainName, combination.RouteID, Source, Destination,Isource,Idestination, Departure, Arrival FROM combination JOIN \n"
         			+ "(SELECT s1.Stopcode as Isource, s1.RouteID, s2.StopCode as Idestination FROM Stops as s1 JOIN Stops s2 ON s1.RouteID = s2.RouteID WHERE s1.Sequence < s2.Sequence) as intermediate\n"
         			+ "ON combination.RouteID = intermediate.RouteID) result \n"
         			+ "WHERE ((Source = ? and Destination = ?) or (Source = ? and Isource = ? ) or (Source = ? and Idestination = ?) or (Isource = ? and Idestination = ?))");
         	
+        	if(dateString.equals(today)) {
         	
+				if(hour>6) {
+					query.append(" AND Departure>\"0600\"");
+				}
+				else if(hour>12) {
+					query.append(" AND Departure>\"1200\"");
+				}
+				else if(hour>16) {
+					query.append(" AND Departure>\"1600\"");
+				}
+			}
         	if (departure != null && !departure.isEmpty()) {
         		switch (departure) {
         		case "Morning":
-        			query.append(" AND (Departure>=0600 AND Departure <1200)");
+        			query.append(" AND (Departure>=\"06:00\" AND Departure <\"12:00\")");
         			break;
         		case "Afternoon":
-        			query.append(" AND (Departure>=1200 AND Departure <1800)");
+        			query.append(" AND (Departure>=\"12:00\" AND Departure <\"18:00)\"");
         			break;
         		case "Evening":
-        			query.append(" AND (Departure>=1800 AND Departure <2400)");
+        			query.append(" AND (Departure>=\"18:00\" AND Departure <\"24:00\")");
         			break;
         		case "Night":
-        			query.append(" AND (Departure>=0000 AND Departure <0600)");
+        			query.append(" AND (Departure>=\"00:00\" AND Departure <\"06:00\")");
         			break;
         		default:
         			break;
@@ -556,16 +578,16 @@ public class TrainsDAO {
         	if (arrival != null && !arrival.isEmpty()) {
         		switch (arrival) {
         		case "Morning":
-        			query.append(" AND (Arrival>=0600 AND Arrival <1200)");
+        			query.append(" AND (Arrival>=\"06:00\" AND Arrival <\"12:00\")");
         			break;
         		case "Afternoon":
-        			query.append(" AND (Arrival>=1200 AND Arrival <1800)");
+        			query.append(" AND (Arrival>=\"12:00\" AND Arrival <\"18:00\")");
         			break;
         		case "Evening":
-        			query.append(" AND (Arrival>=1800 AND Arrival <2400)");
+        			query.append(" AND (Arrival>=\"18:00\" AND Arrival <\"24:00\")");
         			break;
         		case "Night":
-        			query.append(" AND (Arrivall>=0000 AND Arrival <0600)");
+        			query.append(" AND (Arrivall>=\"00:00\" AND Arrival <\"06:00\")");
         			break;
         		default:
         			break;
@@ -632,4 +654,6 @@ public class TrainsDAO {
 			return null;
 		}
 	}
+	
+	
 }

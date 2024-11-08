@@ -40,7 +40,7 @@ form {
 	margin-top: 20px;
 }
 
-input[type="text"], select, input[type="date"], input[type="number"] {
+input[type="text"], select, input[type="date"], input[type="number"],input[type="time"] {
 	display: block;
 	margin: 10px 0;
 	padding: 10px;
@@ -123,9 +123,9 @@ input[type="submit"] {
 	</select> <br>
   
     <label for="tdeparture">Departure:</label><br>
-    <input type="number" id="tdeparture" name="tdeparture" required><br>
+    <input type="time" id="tdeparture" name="tdeparture" required><br>
     <label for="tarrival">Arrival:</label><br>
-    <input type="number" id="tarrival" name="tarrival" required><br>
+    <input type="time" id="tarrival" name="tarrival" required><br>
     <label for="tperiodicity">Periodicity (comma to separate):</label><br>
     <input type="text" id="tperiodicity" name="tperiodicity" required><br>
     <label for="tintermediate">Intermediate Stops (comma to separate):</label><br>
@@ -158,7 +158,7 @@ input[type="submit"] {
     <input type="text" id="tdestination" name="tdestination"><br>
     <label for="tseatalgo">Seat Algorithm:</label> 
     
-    <select id="tseatalgo" name="tseatalgo" required>
+    <select id="tseatalgo" name="tseatalgo">
 			<option value="">Select Algorithm</option>
 			<option value="SCATTERRED">Scattereed</option>
 			<option value="ORDERED">Ordered</option>
@@ -167,9 +167,9 @@ input[type="submit"] {
 	</select> <br>
 
     <label for="tdeparture">Departure:</label><br>
-    <input type="number" id="tdeparture" name="tdeparture"><br>
+    <input type="time" id="tdeparture" name="tdeparture"><br>
     <label for="tarrival">Arrival:</label><br>
-    <input type="number" id="tarrival" name="tarrival"><br>
+    <input type="time" id="tarrival" name="tarrival"><br>
     <label for="tperiodicity">Periodicity (comma to separate):</label><br>
     <input type="text" id="tperiodicity" name="tperiodicity"><br>
     <label for="tintermediate">Intermediate Stops (comma to separate):</label><br>

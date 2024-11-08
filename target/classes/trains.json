@@ -9,8 +9,8 @@
         "TND",
         "EGM"
       ],
-      "DEPARTURE": "1000",
-      "ARRIVAL": "1500",
+      "DEPARTURE": "10:00",
+      "ARRIVAL": "15:00",
       "PERIODICITY": [
         "WED",
         "SAT"
@@ -44,8 +44,8 @@
         "PDY",
         "EGM"
       ],
-      "DEPARTURE": "1300",
-      "ARRIVAL": "1900",
+      "DEPARTURE": "13:00",
+      "ARRIVAL": "19:00",
       "PERIODICITY": [
         "WED"
       ],
@@ -72,8 +72,8 @@
         "PDY",
         "EGM"
       ],
-      "DEPARTURE": "2300",
-      "ARRIVAL": "0500",
+      "DEPARTURE": "23:00",
+      "ARRIVAL": "05:00",
       "PERIODICITY": [
         "SUN"
       ],
@@ -102,8 +102,8 @@
         "EGM",
         "CNG"
       ],
-      "DEPARTURE": "0600",
-      "ARRIVAL": "1200",
+      "DEPARTURE": "06:00",
+      "ARRIVAL": "12:00",
       "PERIODICITY": [
         "MON",
         "TUE",
@@ -143,8 +143,8 @@
         "PDY",
         "TND"
       ],
-      "DEPARTURE": "1400",
-      "ARRIVAL": "2000",
+      "DEPARTURE": "14:00",
+      "ARRIVAL": "20:00",
       "PERIODICITY": [
         "WED"
       ],
@@ -179,8 +179,8 @@
         "EGM",
         "CNG"
       ],
-      "DEPARTURE": "1700",
-      "ARRIVAL": "2300",
+      "DEPARTURE": "17:00",
+      "ARRIVAL": "23:00",
       "PERIODICITY": [
         "SAT"
       ],
@@ -214,8 +214,8 @@
         "TND",
         "EGM"
       ],
-      "DEPARTURE": "0800",
-      "ARRIVAL": "1400",
+      "DEPARTURE": "08:00",
+      "ARRIVAL": "14:00",
       "PERIODICITY": [
         "SUN"
       ],
@@ -249,8 +249,8 @@
         "CNG",
         "PDY"
       ],
-      "DEPARTURE": "0700",
-      "ARRIVAL": "1300",
+      "DEPARTURE": "07:00",
+      "ARRIVAL": "13:00",
       "PERIODICITY": [
         "FRI"
       ],
@@ -284,8 +284,8 @@
         "VPM",
         "EGM"
       ],
-      "DEPARTURE": "0900",
-      "ARRIVAL": "1500",
+      "DEPARTURE": "09:00",
+      "ARRIVAL": "15:00",
       "PERIODICITY": [
         "TUE"
       ],
@@ -319,8 +319,8 @@
         "PDY",
         "TND"
       ],
-      "DEPARTURE": "1500",
-      "ARRIVAL": "2100",
+      "DEPARTURE": "15:00",
+      "ARRIVAL": "21:00",
       "PERIODICITY": [
         "THU"
       ],
@@ -354,8 +354,8 @@
         "CNG",
         "PDY"
       ],
-      "DEPARTURE": "1600",
-      "ARRIVAL": "2200",
+      "DEPARTURE": "16:00",
+      "ARRIVAL": "22:00",
       "PERIODICITY": [
         "SUN"
       ],
@@ -389,8 +389,8 @@
         "EGM",
         "VPM"
       ],
-      "DEPARTURE": "1100",
-      "ARRIVAL": "1700",
+      "DEPARTURE": "11:00",
+      "ARRIVAL": "17:00",
       "PERIODICITY": [
         "SAT"
       ],

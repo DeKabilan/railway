@@ -28,6 +28,10 @@ public class BookingServlet extends HttpServlet {
 	TicketsDAO ticketsdao = new TicketsDAO();
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.getWriter().append("Served at: ").append(request.getContextPath());
+		HttpSession session = request.getSession();
+		if(!((String)session.getAttribute("userRole")).equals("user")) {
+			
+		}
 	}
 
 
@@ -52,7 +56,7 @@ public class BookingServlet extends HttpServlet {
 			if((request.getParameter("email"+i)!="") || !(request.getParameter("email"+i).equals(null)) ) {
 				ticket.setMail(request.getParameter("email"+i));
 			}
-			ticket.setType((String)request.getParameter("compartment"+i));
+			ticket.setType((String)session.getAttribute("ticketType"));
 			if(ticket.getType().equals("ACseats")) {
 				cost+=train.getACCompartmentCost();
 			}

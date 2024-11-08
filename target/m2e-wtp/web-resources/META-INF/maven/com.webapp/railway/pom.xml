@@ -20,6 +20,15 @@
     	<artifactId>mysql-connector-j</artifactId>
     	<version>9.0.0</version>
 	</dependency>
+	
+	
+<dependency>
+    <groupId>com.itextpdf</groupId>
+    <artifactId>itext7-core</artifactId>
+    <version>7.2.5</version>
+    <type>pom</type>
+</dependency>
+
 	<!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
 <dependency>
     <groupId>javax.servlet</groupId>

@@ -23,10 +23,10 @@ public class TicketsDAO {
 			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/IRTC","dekabilan","password");
 			Ticket ticket = ticketList.get(0);
 			Train train = ticket.getTrain();
-			String query = "INSERT INTO TicketGroup (TrainID, User, Source, Destination, BookDate, TravelDate) VALUES\n"
+			String query = "INSERT INTO TicketGroup (TrainName, User, Source, Destination, BookDate, TravelDate) VALUES\n"
 					+ "(?,?,?,?,?,?);";
 			PreparedStatement pst = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-			pst.setInt(1,train.getID());
+			pst.setString(1,train.getName());
 			pst.setString(2,user);
 			pst.setString(3,train.getSource());
 			pst.setString(4,train.getDestination());
@@ -47,7 +47,12 @@ public class TicketsDAO {
 				pst1.setInt(1, batchID);
 				pst1.setString(2,eachTicket.getName());
 				pst1.setInt(3, eachTicket.getAge());
-				pst1.setString(4, eachTicket.getMail());
+				if(eachTicket.getMail()=="") {
+					pst1.setString(4, "Not Provided");
+				}
+				else {
+					pst1.setString(4, eachTicket.getMail());
+				}
 				pst1.setString(5,eachTicket.getType());
 				pst1.setString(6,eachTicket.getSeatNo());
 				pst1.addBatch();
@@ -73,28 +78,51 @@ public class TicketsDAO {
 	}
 	
 	
-	
-	public ArrayList<TicketBatch> getBatches(String username) {
-		ArrayList<TicketBatch> result = new ArrayList<TicketBatch>();
+	public ArrayList<Ticket> getTicket(TicketBatch ticketbatch) {
+		try {
+			TrainsDAO trainsdao = new TrainsDAO();
+			ArrayList<Ticket> ticketList = new ArrayList<Ticket>();
+			Class.forName("com.mysql.jdbc.Driver");
+			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/IRTC", "dekabilan", "password");
+			for(int ticketID : ticketbatch.getTickets()) {
+				String query = "SELECT * FROM Tickets WHERE TicketID = ?";
+				PreparedStatement ps = con.prepareStatement(query);
+				ps.setInt(1,ticketID );
+				ResultSet rs = ps.executeQuery();
+				if(rs.next()) {
+					Ticket ticket = new Ticket();
+					ticket.setTrain(trainsdao.getTrain(ticketbatch.getTrain()));
+					ticket.setSeatNo(rs.getString("SeatNo"));
+					ticket.setMail(rs.getString("Email"));
+					ticket.setName(rs.getString("Name"));
+					ticket.setAge(rs.getInt("Age"));
+					ticket.setBookDate(ticketbatch.getBookDate());
+					ticket.setTravelDate(ticketbatch.getTravelDate());
+					ticketList.add(ticket);
+				}
+			}
+			return ticketList;
+		}
+		catch(Exception e) {
+			System.out.println(e);
+			return null;
+		}
+		
+		
+	}
+	public TicketBatch getBatch(int ID) {
+		TicketBatch ticketbatch = new TicketBatch();
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/IRTC", "dekabilan", "password");
-			String query = "SELECT * FROM TicketGroup WHERE User  = ?;";
+			String query = "SELECT * FROM TicketGroup WHERE GroupID  = ?;";
 			PreparedStatement ps = con.prepareStatement(query);
-			ps.setString(1, username);
+			ps.setInt(1, ID);
 			ResultSet rs = ps.executeQuery();
-			while (rs.next()) {
-				TicketBatch ticketbatch = new TicketBatch();
+			if (rs.next()) {
 				ticketbatch.setBatchID(rs.getInt("GroupID"));
-				ticketbatch.setBatchID(rs.getInt("GroupID"));
-				int trainID = rs.getInt("TrainID");
-				query = "SELECT TrainName as tn FROM Trains WHERE TrainID = ?";
-				PreparedStatement pst2 = con.prepareStatement(query);
-				pst2.setInt(1, trainID);
-				ResultSet rs2 = pst2.executeQuery();
-				if(rs2.next()) {
-					ticketbatch.setTrain(rs2.getString("tn"));
-				}
+				ticketbatch.setUser(rs.getString("User"));
+				ticketbatch.setTrain(rs.getString("TrainName"));
 				ticketbatch.setCost(rs.getInt("Cost"));
 				ticketbatch.setSource(rs.getString("Source"));
 				ticketbatch.setDestination(rs.getString("Destination"));
@@ -105,18 +133,18 @@ public class TicketsDAO {
 				query = "SELECT * FROM Tickets WHERE GroupID  = ?;";
 				PreparedStatement pst1 = con.prepareStatement(query);
 				pst1.setInt(1, rs.getInt("GroupID"));
-				ResultSet rs1 = pst1.executeQuery();pst2.setInt(1, trainID);
+				ResultSet rs1 = pst1.executeQuery();
 				while(rs1.next()) {
 					tickets.add(rs1.getInt("TicketID"));
 				}
 				ticketbatch.setTickets(tickets);
-				result.add(ticketbatch);
+				
 			}
 			
 		} catch (Exception e) {
 			System.out.println(e);
 		}
-		return result;
+		return ticketbatch;
 	}
 	
 	
@@ -135,14 +163,7 @@ public class TicketsDAO {
 			while (rs.next()) {
 				TicketBatch ticketbatch = new TicketBatch();
 				ticketbatch.setBatchID(rs.getInt("GroupID"));
-				int trainID = rs.getInt("TrainID");
-				query = "SELECT TrainName as tn FROM Trains WHERE TrainID = ?";
-				PreparedStatement pst2 = con.prepareStatement(query);
-				pst2.setInt(1, trainID);
-				ResultSet rs2 = pst2.executeQuery();
-				if(rs2.next()) {
-					ticketbatch.setTrain(rs2.getString("tn"));
-				}
+				ticketbatch.setTrain(rs.getString("TrainName"));
 				ticketbatch.setCost(rs.getInt("Cost"));
 				ticketbatch.setSource(rs.getString("Source"));
 				ticketbatch.setDestination(rs.getString("Destination"));
@@ -166,13 +187,16 @@ public class TicketsDAO {
 		}
 		return result;
 	}
-	public int getAmountOfData() {
+	
+	
+	public int getAmountOfData(String user) {
 		int result = 0;
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/IRTC", "dekabilan", "password");
-			String query = "SELECT COUNT(*) as count FROM TicketGroup;";
+			String query = "SELECT COUNT(*) as count FROM TicketGroup WHERE User = ?;";
 			PreparedStatement ps = con.prepareStatement(query);
+			ps.setString(1, user);
 			ResultSet rs = ps.executeQuery();
 			if (rs.next()) {
 				result = rs.getInt("count");
@@ -182,4 +206,6 @@ public class TicketsDAO {
 		}
 		return result;
 	}
+	
+
 }

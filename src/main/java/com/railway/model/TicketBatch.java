@@ -3,15 +3,15 @@ package com.railway.model;
 import java.util.ArrayList;
 
 public class TicketBatch {
-	int batchID;
-	ArrayList<Integer> tickets;
-	String user;
-	int cost;
-	String Train;
-	String source;
-	String destination;
-	String travelDate;
-	String bookDate;
+	int batchID = -1;
+	ArrayList<Integer> tickets = new ArrayList<Integer>();
+	String user="";
+	int cost=-1;
+	String Train = "";
+	String source = "";
+	String destination = "";
+	String travelDate = "";
+	String bookDate = "";
 	
 	public String getTrain() {
 		return Train;

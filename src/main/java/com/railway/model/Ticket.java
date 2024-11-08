@@ -3,14 +3,14 @@ package com.railway.model;
 public class Ticket {
 
 	
-	String type;
-	Train train;
-	String seatNo;
+	String type="";
+	Train train = new Train();
+	String seatNo="";
 	String mail="";
-	String name;
-	int age;
-	String bookDate;
-	String travelDate;
+	String name="";
+	int age = -1;
+	String bookDate = "";
+	String travelDate="";
 	
 	public String getType() {
 		return type;

@@ -6,12 +6,12 @@ import com.railway.utils.Algorithms;
 public class Train {
 
 	
-	String name;
-	String source;
-	String destination;
+	String name="";
+	String source="";
+	String destination="";
 	ArrayList<String> intermediate = new ArrayList<String>();
-	String departure;
-	String arrival;
+	String departure="";
+	String arrival="";
 	ArrayList<String> periodicity = new ArrayList<String>();
 	Algorithms SeatAlgorithm;
 	int ACCompartmentNo=0;

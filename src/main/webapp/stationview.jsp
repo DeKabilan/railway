@@ -44,8 +44,19 @@
 </head>
 <body>
     <h2>Station List</h2>
-    <a href="./station">Back to Admin Page</a>
-    <a href="./user">Back to User Page</a>
+    <%
+    if(((String)session.getAttribute("userRole")).equals("admin")){
+    %>
+    <a href="./station">Back</a>
+    <%
+    }
+    else if(((String)session.getAttribute("userRole")).equals("user")){
+    	%>
+    <a href="./user">Back</a>
+    	
+    	<%
+    }
+    %>
     
     <table>
         <thead>
