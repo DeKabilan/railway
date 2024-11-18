@@ -1,7 +1,6 @@
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="com.railway.model.TicketBatch" %>
 <%@ page import="com.railway.model.Ticket" %>
-<%@ page import="com.railway.decorator.PDFDecorator" %>
 <%@ page import="com.railway.dao.TicketsDAO" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
@@ -61,11 +60,10 @@
         </thead>
         <tbody>
         <%
-        	PDFDecorator pdfdecorator = new PDFDecorator();
+
             TicketsDAO ticketsdao = new TicketsDAO();
             Integer groupid = Integer.parseInt(request.getParameter("groupid"));
             ArrayList<Ticket> ticketList = ticketsdao.getTicket(ticketsdao.getBatch(groupid));
-            pdfdecorator.createTicket(ticketsdao.getBatch(groupid));
 			%>
 			
 			<%
@@ -102,6 +100,6 @@
         </tbody>
     </table>
     <br>
-	<a href="<%= request.getContextPath() %>/download">Download Ticket</a>
+	<a href="<%= request.getContextPath() %>/download?groupid=<%=request.getParameter("groupid")%>">Download Ticket</a>
 </body>
 </html>

@@ -16,6 +16,16 @@
         input[type="number"] {
             -moz-appearance: textfield;
         }
+    fieldset {
+    width: 300px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    margin-bottom: 10px;
+}
+
+legend {
+    font-weight: bold;
+}
     
         body {
 	font-family: Arial, sans-serif;
@@ -62,6 +72,7 @@ input[type="submit"] {
 <h2>Train Management</h2>
 <nav>
     <a href="/railway/station">Click for Stations</a><br>
+        <a href="/railway/stationview.jsp">Click to Search Station</a><br>
         <a href="/railway/trainview.jsp">Click to View All Trains</a><br>
     <a href="/railway/login">Click to Logout</a>
 </nav>
@@ -126,8 +137,17 @@ input[type="submit"] {
     <input type="time" id="tdeparture" name="tdeparture" required><br>
     <label for="tarrival">Arrival:</label><br>
     <input type="time" id="tarrival" name="tarrival" required><br>
-    <label for="tperiodicity">Periodicity (comma to separate):</label><br>
-    <input type="text" id="tperiodicity" name="tperiodicity" required><br>
+        <fieldset>
+        <legend>Periodicity</legend>
+        <label><input type="checkbox" name="days[]" value="MON"> Monday</label>
+        <label><input type="checkbox" name="days[]" value="TUE"> Tuesday</label>
+        <label><input type="checkbox" name="days[]" value="WED"> Wednesday</label><br>
+        <label><input type="checkbox" name="days[]" value="THU"> Thursday</label>
+        <label><input type="checkbox" name="days[]" value="FRI"> Friday</label>
+        <label><input type="checkbox" name="days[]" value="SAT"> Saturday</label><br>
+        <label><input type="checkbox" name="days[]" value="SUN"> Sunday</label>
+        <br><br>
+    </fieldset><br>
     <label for="tintermediate">Intermediate Stops (comma to separate):</label><br>
     <input type="text" id="tintermediate" name="tintermediate" required><br>
     <label for="tacno">AC coach amount:</label><br>
@@ -170,8 +190,17 @@ input[type="submit"] {
     <input type="time" id="tdeparture" name="tdeparture"><br>
     <label for="tarrival">Arrival:</label><br>
     <input type="time" id="tarrival" name="tarrival"><br>
-    <label for="tperiodicity">Periodicity (comma to separate):</label><br>
-    <input type="text" id="tperiodicity" name="tperiodicity"><br>
+        <fieldset>
+        <legend>Periodicity</legend>
+        <label><input type="checkbox" name="days[]" value="MON"> Monday</label>
+        <label><input type="checkbox" name="days[]" value="TUE"> Tuesday</label>
+        <label><input type="checkbox" name="days[]" value="WED"> Wednesday</label><br>
+        <label><input type="checkbox" name="days[]" value="THU"> Thursday</label>
+        <label><input type="checkbox" name="days[]" value="FRI"> Friday</label>
+        <label><input type="checkbox" name="days[]" value="SAT"> Saturday</label><br>
+        <label><input type="checkbox" name="days[]" value="SUN"> Sunday</label>
+        <br><br>
+    </fieldset><br>
     <label for="tintermediate">Intermediate Stops (comma to separate):</label><br>
     <input type="text" id="tintermediate" name="tintermediate"><br>
     <label for="tacno">AC coach amount:</label><br>

@@ -5,224 +5,81 @@ import com.railway.model.Ticket;
 import com.railway.model.Train;
 
 public enum Algorithms {
-	ODD_FIRST {
-		@Override
-		public String getSeatNo(Ticket ticket) {
-			TrainsDAO trainsdao = new TrainsDAO();
-			String result = "";
-			Train train = ticket.getTrain();
-			int ACseats = train.getACCompartmentNo() * train.getACCompartmentSeats();
-			int NONACseats = train.getNONACCompartmentNo() * train.getNONACCompartmentSeats();
-			int ticketNo;
 
-			switch (ticket.getType()) {
-			case "ACseats":
-				ticketNo = 1 + (ACseats - trainsdao.getSeats(ticket.getType(), train.getName()));
-				int currseat = 0;
-				for (int i = 1; i < train.getACCompartmentNo()+ 1; i++) {
-					for (int j = 1; j <= train.getACCompartmentSeats(); j += 2) {
-						currseat += 1;
-						if (currseat == ticketNo) {
-							result = "AC-" + i + "-" + j;
-							break;
-						}
-					}
-				}
-				for (int i = 1; i < train.getACCompartmentNo() + 1; i++) {
-					for (int j = 2; j <= train.getACCompartmentSeats(); j += 2) {
-						currseat += 1;
-						if (currseat == ticketNo) {
-							
-							result = "AC-" + i + "-" + j;
-							break;
-						}
-					}
-				}
-				break;
+    ODD_FIRST {
+        @Override
+        public String getSeatNo(Ticket ticket) {
+            return allocateSeat(ticket, true, false);
+        }
+    },
 
-			case "NONACseats":
-				ticketNo = 1 + (NONACseats - trainsdao.getSeats(ticket.getType(), train.getName()));
-				currseat = 0;
-				for (int i = 1; i < train.getNONACCompartmentNo()+ 1; i++) {
-					for (int j = 1; j <= train.getNONACCompartmentSeats(); j += 2) {
-						currseat += 1;
-						if (currseat == ticketNo) {
-							result = "NONAC-" + i + "-" + j;
-							break;
-						}
-					}
-				}
-				for (int i = 1; i < train.getNONACCompartmentNo() + 1; i++) {
-					for (int j = 2; j <= train.getNONACCompartmentSeats(); j += 2) {
-						currseat += 1;
-						if (currseat == ticketNo) {
-							
-							result = "NONAC-" + i + "-" + j;
-							break;
+    EVEN_FIRST {
+        @Override
+        public String getSeatNo(Ticket ticket) {
+            return allocateSeat(ticket, false, true);
+        }
+    },
 
-						}
-					}
-				}
-				break;
-			}
-			return result;
-		}
-	},
-	
-	ORDERED {
-		@Override
-		public String getSeatNo(Ticket ticket) {
-		    TrainsDAO trainsdao = new TrainsDAO();
-		    String result = "";
-		    Train train = ticket.getTrain();
-		    int ACseats = train.getACCompartmentNo() * train.getACCompartmentSeats();
-		    int NONACseats = train.getNONACCompartmentNo() * train.getNONACCompartmentSeats();
-		    int ticketNo;
+    ORDERED {
+        @Override
+        public String getSeatNo(Ticket ticket) {
+            return allocateSeat(ticket, false, false);
+        }
+    },
 
-		    switch (ticket.getType()) {
-		        case "ACseats":
-	
-		            ticketNo = 1 + (ACseats - trainsdao.getSeats(ticket.getType(), train.getName()));
-		            int currseatAC = 0;
-		            
+    SCATTERRED {
+        @Override
+        public String getSeatNo(Ticket ticket) {
+            return allocateSeat(ticket, false, false);
+        }
+    };
 
-		            for (int i = 1; i <= train.getACCompartmentNo(); i++) {
-		                for (int j = 1; j <= train.getACCompartmentSeats(); j++) {
-		                    currseatAC += 1;
-		                    if (currseatAC == ticketNo) {
-		                        result = "AC-" + i + "-" + j;
-		                        return result; 
-		                    }
-		                }
-		            }
-		            break;
+    public abstract String getSeatNo(Ticket ticket);
 
-		        case "NONACseats":
-		      
-		            ticketNo = 1 + (NONACseats - trainsdao.getSeats(ticket.getType(), train.getName()));
-		            int currseatNONAC = 0;
-		            
-		           
-		            for (int i = 1; i <= train.getNONACCompartmentNo(); i++) {
-		                for (int j = 1; j <= train.getNONACCompartmentSeats(); j++) {
-		                    currseatNONAC += 1;
-		                    if (currseatNONAC == ticketNo) {
-		                        result = "NONAC-" + i + "-" + j;
-		                        return result;
-		                    }
-		                }
-		            }
-		            break;
-		    }
-		    return result;
-		}
-	},
-	EVEN_FIRST {
-		public String getSeatNo(Ticket ticket) {
-			TrainsDAO trainsdao = new TrainsDAO();
-			String result = "";
-			Train train = ticket.getTrain();
-			int ACseats = train.getACCompartmentNo() * train.getACCompartmentSeats();
-			int NONACseats = train.getNONACCompartmentNo() * train.getNONACCompartmentSeats();
-			int ticketNo;
+    private static String allocateSeat(Ticket ticket, boolean oddFirst, boolean evenFirst) {
+        TrainsDAO trainsDAO = new TrainsDAO();
+        Train train = ticket.getTrain();
+        int totalSeats = ticket.getType().equals("ACseats")
+                ? train.getACCompartmentNo() * train.getACCompartmentSeats()
+                : train.getNONACCompartmentNo() * train.getNONACCompartmentSeats();
+        int remainingSeats = trainsDAO.getSeats(ticket.getType(), train.getName());
+        int ticketNo = 1 + (totalSeats - remainingSeats);
 
-			switch (ticket.getType()) {
-			case "ACseats":
-				ticketNo = 1 + (ACseats - trainsdao.getSeats(ticket.getType(), train.getName()));
-				int currseat = 0;
-				for (int i = 1; i < train.getACCompartmentNo() + 1; i++) {
-					for (int j = 2; j <= train.getACCompartmentSeats(); j += 2) {
-						currseat += 1;
-						if (currseat == ticketNo) {
-							
-							result = "AC-" + i + "-" + j;
-							break;
-						}
-					}
-				}
-				for (int i = 1; i < train.getACCompartmentNo()+ 1; i++) {
-					for (int j = 1; j <= train.getACCompartmentSeats(); j += 2) {
-						currseat += 1;
-						if (currseat == ticketNo) {
-							result = "AC-" + i + "-" + j;
-							break;
-						}
-					}
-				}
-				break;
+        int compartments = ticket.getType().equals("ACseats") ? train.getACCompartmentNo() : train.getNONACCompartmentNo();
+        int seatsPerCompartment = ticket.getType().equals("ACseats") ? train.getACCompartmentSeats() : train.getNONACCompartmentSeats();
 
-			case "NONACseats":
-				ticketNo = 1 + (NONACseats - trainsdao.getSeats(ticket.getType(), train.getName()));
-				currseat = 0;
-				for (int i = 1; i < train.getNONACCompartmentNo() + 1; i++) {
-					for (int j = 2; j <= train.getNONACCompartmentSeats(); j += 2) {
-						currseat += 1;
-						if (currseat == ticketNo) {
-							
-							result = "NONAC-" + i + "-" + j;
-							break;
-							
-						}
-					}
-				}
-				for (int i = 1; i < train.getNONACCompartmentNo()+ 1; i++) {
-					for (int j = 1; j <= train.getNONACCompartmentSeats(); j += 2) {
-						currseat += 1;
-						if (currseat == ticketNo) {
-							result = "NONAC-" + i + "-" + j;
-							break;
-						}
-					}
-				}
-				break;
-			}
-			return result;
-		}
-	},
-	SCATTERRED {
-		@Override
-		public String getSeatNo(Ticket ticket) {
-		    TrainsDAO trainsdao = new TrainsDAO();
-		    String result = "";
-		    Train train = ticket.getTrain();
-		    int ACseats = train.getACCompartmentNo() * train.getACCompartmentSeats();
-		    int NONACseats = train.getNONACCompartmentNo() * train.getNONACCompartmentSeats();
-		    int ticketNo;
+        String compartmentPrefix = ticket.getType().equals("ACseats") ? "AC" : "NONAC";
 
-		    switch (ticket.getType()) {
-		        case "ACseats":
-		            ticketNo = 1 + (ACseats - trainsdao.getSeats(ticket.getType(), train.getName()));
-		            int currseatAC = 0;
-		            
-		            for (int i = 1; i <= train.getACCompartmentNo(); i++) {
-		                for (int j = 1; j <= train.getACCompartmentSeats(); j++) {
-		                    currseatAC += 1;
-		                    if (currseatAC == ticketNo) {
-		                        result = "AC-" + i + "-" + j;
-		                        return result; 
-		                    }
-		                }
-		            }
-		            break;
+        return findSeat(ticketNo, compartments, seatsPerCompartment, compartmentPrefix, oddFirst, evenFirst);
+    }
 
-		        case "NONACseats":
-		            ticketNo = 1 + (NONACseats - trainsdao.getSeats(ticket.getType(), train.getName()));
-		            int currseatNONAC = 0;
-		            
-		            for (int i = 1; i <= train.getNONACCompartmentNo(); i++) {
-		                for (int j = 1; j <= train.getNONACCompartmentSeats(); j++) {
-		                    currseatNONAC += 1;
-		                    if (currseatNONAC == ticketNo) {
-		                        result = "NONAC-" + i + "-" + j;
-		                        return result; 
-		                    }
-		                }
-		            }
-		            break;
-		    }
-		    return result;
-		}
-	};
+    private static String findSeat(int ticketNo, int compartments, int seatsPerCompartment, String prefix, boolean oddFirst, boolean evenFirst) {
+        int currentSeat = 0;
 
-	public abstract String getSeatNo(Ticket ticket);
+        if (oddFirst || evenFirst) {
+            for (int pass = 0; pass < 2; pass++) {
+                for (int i = 1; i <= compartments; i++) {
+                    for (int j = (pass == 0) == oddFirst ? 1 : 2; j <= seatsPerCompartment; j += 2) {
+                        currentSeat++;
+                        if (currentSeat == ticketNo) {
+                            return String.format(prefix+"-"+i+"-"+j);
+                        }
+                    }
+                }
+            }
+        } else {
+            for (int i = 1; i <= compartments; i++) {
+                for (int j = 1; j <= seatsPerCompartment; j++) {
+                    currentSeat++;
+                    if (currentSeat == ticketNo) {
+                        return String.format(prefix+"-"+i+"-"+j);
+                    }
+                }
+            }
+        }
+
+        return "";
+    }
 }
+
+

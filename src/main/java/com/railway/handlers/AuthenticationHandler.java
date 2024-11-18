@@ -1,12 +1,12 @@
 package com.railway.handlers;
 
 import com.railway.dao.UserDAO;
-import com.railway.decorator.PasswordDecorator;
 import com.railway.model.User;
+import com.railway.utils.PasswordHasher;
 
 public class AuthenticationHandler {
 	UserDAO userdao = new UserDAO();
-	PasswordDecorator hasher = new PasswordDecorator();
+	PasswordHasher hasher = new PasswordHasher();
 
 	public Boolean validateUser(String loginemail, String pass) {
 		String loginpass = Integer.toString(hasher.hash(pass));

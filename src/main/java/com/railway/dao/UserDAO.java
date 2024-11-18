@@ -1,19 +1,21 @@
 package com.railway.dao;
+
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
 import com.railway.model.User;
+import com.railway.utils.DAOConnection;
 public class UserDAO {
+	
+	DAOConnection connection = new DAOConnection();
+	Connection con = connection.getConnection();
 	
 	//------Get User Data------
 	
 	public User getUser(String email) {
 		User userFromDB = new User();
 		try{
-			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/IRTC","dekabilan","password");
 			Statement st = con.createStatement();
 			ResultSet rs = st.executeQuery("SELECT * FROM Users WHERE Email = \'"+email+"\'");
 			if(rs.next()) {
@@ -39,8 +41,6 @@ public class UserDAO {
 	
 	public Boolean isUserExist(String email) {
 		try{
-			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/IRTC","dekabilan","password");
 			Statement st = con.createStatement();
 			ResultSet rs = st.executeQuery("SELECT * FROM Users WHERE Email = \'"+email+"\'");
 			if(rs.next()) {
@@ -58,8 +58,6 @@ public class UserDAO {
 	
 	public void createUser(String email,String pass) {
 		try{
-			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/IRTC","dekabilan","password");
 			Statement st = con.createStatement();
 			st.execute("INSERT INTO Users (Email,Password,Role) VALUES (\""+email+"\",\""+ pass+"\", 1)");
 		}

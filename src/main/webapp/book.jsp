@@ -68,6 +68,7 @@ input[type="submit"] {
 			
 			<%
 			}%>
+			
 			<input type="submit" value="Calculate Cost">
 		</form>
 	</div>

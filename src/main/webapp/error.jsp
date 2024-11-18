@@ -38,7 +38,7 @@
         }
     </style>
 <body>
-<h2>Page Not Found, Error</h2>
+<h2>Something Went Wrong, Please Login Again</h2>
 	<a href = "/railway/login">Click to Login</a>
 </body>
 </html>

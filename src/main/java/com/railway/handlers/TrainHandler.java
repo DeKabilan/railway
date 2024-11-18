@@ -2,8 +2,6 @@ package com.railway.handlers;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import com.railway.dao.StationsDAO;
 import com.railway.dao.TrainsDAO;
@@ -50,7 +48,7 @@ public class TrainHandler {
 	}
 
 	public Train handleCreate(String name, String tseatalgo, String source, String destination, String strDeparture,
-			String strArrival, String periodicity, String intermediate, Integer ACno, Integer ACseats, Integer ACcost,
+			String strArrival, ArrayList<String> periodicity, String intermediate, Integer ACno, Integer ACseats, Integer ACcost,
 			Integer NONACno, Integer NONACseats, Integer NONACcost) {
 
 		Train train = new Train();
@@ -59,32 +57,37 @@ public class TrainHandler {
 			if (trains.isTrainExist(name)) {
 				throw new CustomExceptions(CustomExceptions.Exceptions.TRAIN_ALREADY_EXISTS);
 			}
-			
+
 			train.setName(name);
 			train.setSeatAlgorithm(tseatalgo);
-			
+
 			if (stationsdao.isStationExist(source)) {
 				train.setSource(source);
 			} else {
 				throw new CustomExceptions(CustomExceptions.Exceptions.SOURCE_DOESNT_EXIST);
 			}
-			
+
 			if (stationsdao.isStationExist(destination)) {
 				train.setDestination(destination);
 			} else {
 				throw new CustomExceptions(CustomExceptions.Exceptions.DESTINATION_DOESNT_EXIST);
 			}
-			
 
 			train.setDeparture(strDeparture);
 			train.setArrival(strArrival);
-			
-			String[] listPeriod = periodicity.split(",");
-			ArrayList<String> itemList = new ArrayList<>(Arrays.asList(listPeriod));
-			train.setPeriodicity(itemList);
-			
+
+			if(periodicity.size()==0) {
+				throw new CustomExceptions(CustomExceptions.Exceptions.PERIODICITY_IS_EMPTY);
+			}
+			train.setPeriodicity(periodicity);
+
 			String[] listInter = intermediate.split(",");
-			itemList = new ArrayList<>(Arrays.asList(listInter));
+			ArrayList<String> itemList = new ArrayList<>(Arrays.asList(listInter));
+			for(String stops : itemList) {
+				if(!stationsdao.isStationExist(stops)) {
+					throw new CustomExceptions(CustomExceptions.Exceptions.STOP_DOESNT_EXIST);
+				}
+			}
 			train.setIntermediate(itemList);
 			train.setACCompartmentNo(ACno);
 			train.setACCompartmentSeats(ACseats);
@@ -101,10 +104,9 @@ public class TrainHandler {
 		}
 	}
 
-	
-	public Train handleUpdate(String oldtname, String tname, String algorithm, String source, String destination, String strDeparture,
-			String strArrival, String periodicity, String intermediate, String acNoStr, String acSeatsStr, String acCostStr,
-			String nonAcNoStr, String nonAcSeatsStr, String nonAcCostStr) {
+	public Train handleUpdate(String oldtname, String tname, String algorithm, String source, String destination,
+			String strDeparture, String strArrival, ArrayList<String> periodicity, String intermediate, String acNoStr,
+			String acSeatsStr, String acCostStr, String nonAcNoStr, String nonAcSeatsStr, String nonAcCostStr) {
 		Train trainFromDB = new Train();
 		try {
 			if (!trains.isTrainExist(oldtname)) {
@@ -170,13 +172,17 @@ public class TrainHandler {
 				trainFromDB.setNONACCompartmentCost(nonAcCost);
 			}
 			if (periodicity != null && !periodicity.isEmpty()) {
-				String[] listPeriod = periodicity.split(",");
-				ArrayList<String> itemList = new ArrayList<>(Arrays.asList(listPeriod));
-				trainFromDB.setPeriodicity(itemList);
+				trainFromDB.setPeriodicity(periodicity);
 			}
+			
 			if (intermediate != null && !intermediate.isEmpty()) {
 				String[] listInter = intermediate.split(",");
 				ArrayList<String> itemList = new ArrayList<>(Arrays.asList(listInter));
+				for(String stops : itemList) {
+					if(!stationsdao.isStationExist(stops)) {
+						throw new CustomExceptions(CustomExceptions.Exceptions.STOP_DOESNT_EXIST);
+					}
+				}
 				trainFromDB.setIntermediate(itemList);
 			}
 
@@ -184,11 +190,10 @@ public class TrainHandler {
 			trains.deleteTrain(oldtname);
 			trains.createTrain(trainFromDB);
 			return trainFromDB;
-		}
-		catch(CustomExceptions ce) {
+		} catch (CustomExceptions ce) {
 			trainFromDB.setText(ce.getException().getMessage());
 			return trainFromDB;
 		}
-	
+
 	}
 }

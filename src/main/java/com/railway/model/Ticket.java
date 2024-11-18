@@ -2,16 +2,15 @@ package com.railway.model;
 
 public class Ticket {
 
-	
-	String type="";
+	String type = "";
 	Train train = new Train();
-	String seatNo="";
-	String mail="";
-	String name="";
+	String seatNo = "";
+	String mail = "";
+	String name = "";
 	int age = -1;
 	String bookDate = "";
-	String travelDate="";
-	
+	String travelDate = "";
+
 	public String getType() {
 		return type;
 	}
@@ -25,7 +24,7 @@ public class Ticket {
 	public void setType(String type) {
 		this.type = type;
 	}
-	
+
 	public Train getTrain() {
 		return train;
 	}
@@ -33,10 +32,6 @@ public class Ticket {
 	public void setTrain(Train train) {
 		this.train = train;
 	}
-
-	
-
-
 
 	public String getSeatNo() {
 		return seatNo;
@@ -49,33 +44,41 @@ public class Ticket {
 	public String getMail() {
 		return mail;
 	}
+
 	public void setMail(String mail) {
 		this.mail = mail;
 	}
+
 	public String getName() {
 		return name;
 	}
+
 	public void setName(String name) {
 		this.name = name;
 	}
+
 	public int getAge() {
 		return age;
 	}
+
 	public void setAge(int age) {
 		this.age = age;
 	}
+
 	public String getBookDate() {
 		return bookDate;
 	}
+
 	public void setBookDate(String bookDate) {
 		this.bookDate = bookDate;
 	}
+
 	public String getTravelDate() {
 		return travelDate;
 	}
+
 	public void setTravelDate(String travelDate) {
 		this.travelDate = travelDate;
 	}
-
 
 }

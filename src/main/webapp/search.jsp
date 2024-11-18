@@ -94,7 +94,7 @@ table {
 	        <%
             TrainsDAO trainsdao = new TrainsDAO();	
             ArrayList<Train> trainList = trainsdao.additionalFilters((String)session.getAttribute("source"), (String)session.getAttribute("destination"),
-            		request.getParameter("departureTime"), request.getParameter("arrivalTime"), request.getParameter("compartment"), (String)session.getAttribute("date"),
+            		request.getParameter("departureTime"), request.getParameter("arrivalTime"), (String)session.getAttribute("ticketType"), (String)session.getAttribute("date"),
             		(String)session.getAttribute("today"),(Integer)session.getAttribute("hour"));
             if (trainList != null && !trainList.isEmpty()) {
             
@@ -147,6 +147,7 @@ table {
 
 
         <%
+
                 }
 			%>
 		</select> 
@@ -163,14 +164,17 @@ table {
 			 <input type="submit" value="Select Train">
 		</form>
 		<%	
-			if(((String)session.getAttribute("seatmessage"))!=null){
-				out.println(session.getAttribute("seatmessage"));
-			}
-			session.setAttribute("seatmessage","");
+
+		if(((String)session.getAttribute("seatmessage"))!=null){
+			out.println("<br>"+(String)session.getAttribute("seatmessage"));
+		session.setAttribute("seatmessage","");
+		}
             }
             else{
+
             	out.println("<br> No Trains Fround");
             }
+            
         %>
 
 </body>

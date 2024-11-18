@@ -63,7 +63,8 @@ input[type="submit"] {
 <h2>Station Management</h2>
 <nav>
     <a href="/railway/train">Click for Trains</a><br>
-    <a href="/railway/stationview.jsp">Click to View All Stations</a><br>
+    <a href="/railway/stationview.jsp">Click to Search Station</a><br>
+     <a href="/railway/trainview.jsp">Click to View All Trains</a><br>
     <a href="/railway/login">Click to Logout</a>
 </nav>
 
@@ -85,14 +86,6 @@ input[type="submit"] {
     StationsDAO stationsDAO = new StationsDAO();
     ArrayList<String> stationCodes = new ArrayList<String>();
 %>
-
-<h2>Read Station</h2>
-<form action="station" method="GET">
-    <label for="stcode">Station Code:</label><br>
-    <input type ="text" id="stcode" name="stcode" required><br>
-    <input type="hidden" name="type" value="read">
-    <input type="submit" value="Read Station">
-</form>
 
 <h2>Create Station</h2>
 <form action="station" method="POST">

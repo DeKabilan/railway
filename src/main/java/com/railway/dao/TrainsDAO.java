@@ -1,24 +1,23 @@
 package com.railway.dao;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
-import com.railway.decorator.JSONDecorator;
 import com.railway.model.Train;
+import com.railway.utils.DAOConnection;
+import com.railway.utils.JSONFormatter;
 
 public class TrainsDAO {
-	
+	DAOConnection connection = new DAOConnection();
+	Connection con = connection.getConnection();
 	//------------Get Train as Model from DB------------
 	
 	public Boolean isTrainExist(String Name) {
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/IRTC","dekabilan","password");
 			String query = "SELECT * FROM Trains WHERE TrainName = ?";
 			PreparedStatement pst1 = con.prepareStatement(query);
 			pst1.setString(1, Name);
@@ -39,8 +38,6 @@ public class TrainsDAO {
 	public int getAmountOfData() {
 		int result = 0;
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/IRTC","dekabilan","password");
 			String query = "SELECT COUNT(*) as count FROM Trains;";
 			PreparedStatement ps = con.prepareStatement(query);
 			ResultSet rs = ps.executeQuery();
@@ -57,8 +54,6 @@ public class TrainsDAO {
 	public ArrayList<Train> getPage(int pageno, int amount){
 		ArrayList<Train> result = new ArrayList<Train>();
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/IRTC","dekabilan","password");
 			String query = "SELECT TrainName FROM Trains ORDER BY TrainName LIMIT ? OFFSET ?";
 			PreparedStatement ps = con.prepareStatement(query);
 			ps.setInt(1,amount);
@@ -77,15 +72,27 @@ public class TrainsDAO {
 	}
 	
 	
-	
+	public ArrayList<Train> getAllTrains(){
+		ArrayList<Train> trainList = new ArrayList<Train>();
+		try {
+			String query = "SELECT TrainName from Trains;";
+			PreparedStatement ps = con.prepareStatement(query);
+			ResultSet rs = ps.executeQuery();
+			while(rs.next()) {
+				trainList.add(this.getTrain(rs.getString("TrainName")));
+			}
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		return trainList;
+	}
 	
 	public Train getTrain(String Name) {
 		Train TrainFromDB = new Train();
 		try{
 			int TrainID = -1;
 			int RouteID = -1;
-			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/IRTC","dekabilan","password");
 			String query = "SELECT * FROM Trains WHERE TrainName = ?";
 			PreparedStatement pst1 = con.prepareStatement(query);
 			pst1.setString(1, Name);
@@ -157,7 +164,7 @@ public class TrainsDAO {
 	
 	
     public void trainListToDB(String path) {
-    	JSONDecorator jsondec = new JSONDecorator();
+    	JSONFormatter jsondec = new JSONFormatter();
     	for(Train trains : jsondec.trainsToArray(path)) {
     		this.createTrain(trains);
     	}
@@ -166,8 +173,6 @@ public class TrainsDAO {
 //    
    public Integer getRemainingSeats(String trainName, String compartment) {
 	   try {
-		   Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/IRTC","dekabilan","password");
 		   String query = "SELECT * FROM Seats JOIN Trains ON Seats.TrainID = Trains.TrainID WHERE TrainName = ?;";
 		   PreparedStatement pst = con.prepareStatement(query);
 		   pst.setString(1, trainName);
@@ -189,20 +194,17 @@ public class TrainsDAO {
     	if(dateString == null || dateString.equals("")) {
     		return new ArrayList<Train>();
     	}
-    	Connection con = null;
     	ArrayList<Train> result = new ArrayList<Train>();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate date = LocalDate.parse(dateString, formatter);
         String dayOfWeek = date.getDayOfWeek().name().substring(0,3);
     	try {
-			Class.forName("com.mysql.jdbc.Driver");
-			con = DriverManager.getConnection("jdbc:mysql://localhost:3306/IRTC","dekabilan","password");
 			StringBuilder query = new StringBuilder("SELECT DISTINCT TrainName, Departure, Arrival FROM\n"
 					+ "(WITH combination as (SELECT Trains.TrainID , TrainName, Routes.RouteID, Source, Destination, Arrival, Departure FROM Trains Join Routes on Trains.TrainID = Routes.TrainID)\n"
 					+ "SELECT TrainName, combination.RouteID, Source, Destination,Isource,Idestination, Departure, Arrival FROM combination JOIN \n"
 					+ "(SELECT s1.Stopcode as Isource, s1.RouteID, s2.StopCode as Idestination FROM Stops as s1 JOIN Stops s2 ON s1.RouteID = s2.RouteID WHERE s1.Sequence < s2.Sequence) as intermediate\n"
 					+ "ON combination.RouteID = intermediate.RouteID) result \n"
-					+ "WHERE ((Source = ? and Destination = ?) or (Source = ? and Isource = ? ) or (Source = ? and Idestination = ?) or (Isource = ? and Idestination = ?))");
+					+ "WHERE ((Source = ? and Destination = ?) or (Source = ? and Isource = ? ) or (Source = ? and Idestination = ?) or (Isource = ? and Idestination = ?) or (Isource = ? and Destination = ?))");
 			if(dateString.equals(today)) {
 				if(hour>6) {
 					query.append(" AND Departure>\"06:00\"");
@@ -224,6 +226,8 @@ public class TrainsDAO {
     		ps.setString(6, destination);
     		ps.setString(7, source);
     		ps.setString(8, destination);
+    		ps.setString(9, source);
+    		ps.setString(10, destination);
     		ResultSet rs = ps.executeQuery();
     		while(rs.next()) {
     			Train train = this.getTrain(rs.getString("TrainName"));
@@ -244,12 +248,10 @@ public class TrainsDAO {
     
 	//----------------Insert Train from Model into DB----------
 	public void createTrain(Train TrainObject) {
-		Connection con = null;
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			con = DriverManager.getConnection("jdbc:mysql://localhost:3306/IRTC","dekabilan","password");
 			con.setAutoCommit(false);
-			String query = "INSERT INTO Trains (TrainName, Departure, Arrival, SeatAlgorithm) VALUES (?,?,?,?);";
+			String query = "INSERT INTO Trains (TrainName, Departure, Arrival, SeatAlgorithm) VALUES (?,?,?,?)  ON DUPLICATE KEY UPDATE TrainName = VALUES(TrainName)"
+					+ ",Departure = VALUES(Departure),Arrival = VALUES(Arrival),SeatAlgorithm = VALUES(SeatAlgorithm);";
 			PreparedStatement pst1 = con.prepareStatement(query);
 			pst1.setString(1, TrainObject.getName());
 			pst1.setString(2, TrainObject.getDeparture());
@@ -344,10 +346,7 @@ public class TrainsDAO {
 	
 	public void deleteTrain(String TrainName) {
 		
-		 Connection con = null;
 	        try {
-	            Class.forName("com.mysql.cj.jdbc.Driver");
-	            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/IRTC", "dekabilan", "password");
 	            con.setAutoCommit(false);
 
 	            String query = "DELETE FROM Compartments WHERE TrainID = (SELECT TrainID FROM Trains WHERE TrainName = ?)";
@@ -402,10 +401,7 @@ public class TrainsDAO {
 	//-------------Update Train using TrainName from DB with Train Model----------
 	
 	public void updateTrain(String TrainName, Train TrainObject) {
-	    Connection con = null;
 	    try {
-	        Class.forName("com.mysql.cj.jdbc.Driver");
-	        con = DriverManager.getConnection("jdbc:mysql://localhost:3306/IRTC", "dekabilan", "password");
 	        con.setAutoCommit(false);
 	        String query = "SELECT TrainID FROM Trains WHERE TrainName = ?";
 	        PreparedStatement ps = con.prepareStatement(query);
@@ -493,8 +489,6 @@ public class TrainsDAO {
 	public int getSeats(String compartment, String trainName) {
 		int result = 0;
 		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-	       Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/IRTC", "dekabilan", "password");
 	       String query = "SELECT * FROM Seats WHERE TrainID = (SELECT TrainID FROM Trains WHERE TrainName = ?)";
 	       PreparedStatement pst = con.prepareStatement(query);
 	       pst.setString(1, trainName);
@@ -512,8 +506,6 @@ public class TrainsDAO {
 	
 	public void updateSeats(String compartment, String trainName, int newSeats) {
 		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-	       Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/IRTC", "dekabilan", "password");
 	       String query = "UPDATE Seats\n"
 	       		+ "SET "+compartment+" = "+newSeats+"\n"
 	       		+ "WHERE TrainID = (SELECT TrainID FROM Trains WHERE TrainName = ?);";
@@ -530,20 +522,17 @@ public class TrainsDAO {
 	
 	public ArrayList<Train> additionalFilters(String source, String destination, String departure, String arrival, String compartment, String dateString, String today, int hour) {
 		ArrayList<Train> result = new ArrayList<>();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        LocalDate date = LocalDate.parse(dateString, formatter);
-        String dayOfWeek = date.getDayOfWeek().name().substring(0,3);
+		ArrayList<Train> finalResult = new ArrayList<>();
+
         try {
-        	Class.forName("com.mysql.cj.jdbc.Driver");
- 	       Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/IRTC", "dekabilan", "password");
         	StringBuilder query = new StringBuilder("SELECT DISTINCT TrainName, Departure, Arrival FROM\n"
         			+ "(WITH combination as (SELECT Trains.TrainID , TrainName, Routes.RouteID, Source, Destination, Arrival, Departure FROM Trains Join Routes on Trains.TrainID = Routes.TrainID)\n"
         			+ "SELECT TrainName, combination.RouteID, Source, Destination,Isource,Idestination, Departure, Arrival FROM combination JOIN \n"
         			+ "(SELECT s1.Stopcode as Isource, s1.RouteID, s2.StopCode as Idestination FROM Stops as s1 JOIN Stops s2 ON s1.RouteID = s2.RouteID WHERE s1.Sequence < s2.Sequence) as intermediate\n"
         			+ "ON combination.RouteID = intermediate.RouteID) result \n"
-        			+ "WHERE ((Source = ? and Destination = ?) or (Source = ? and Isource = ? ) or (Source = ? and Idestination = ?) or (Isource = ? and Idestination = ?))");
+        			+ "WHERE ((Source = ? and Destination = ?) or (Source = ? and Isource = ? ) or (Source = ? and Idestination = ?) or (Isource = ? and Idestination = ?) or (Isource = ? and Destination = ?))");
         	
-        	if(dateString.equals(today)) {
+        	if(dateString != null && !dateString.isEmpty() && dateString.equals(today)) {
         	
 				if(hour>6) {
 					query.append(" AND Departure>\"0600\"");
@@ -587,7 +576,7 @@ public class TrainsDAO {
         			query.append(" AND (Arrival>=\"18:00\" AND Arrival <\"24:00\")");
         			break;
         		case "Night":
-        			query.append(" AND (Arrivall>=\"00:00\" AND Arrival <\"06:00\")");
+        			query.append(" AND (Arrival>=\"00:00\" AND Arrival <\"06:00\")");
         			break;
         		default:
         			break;
@@ -604,6 +593,8 @@ public class TrainsDAO {
     		pst.setString(6, destination);
     		pst.setString(7, source);
     		pst.setString(8, destination);
+    		pst.setString(9, source);
+    		pst.setString(10, destination);
         	ResultSet rs = pst.executeQuery();
         	if (compartment != null && !compartment.isEmpty()) {
         		while(rs.next()) {
@@ -611,21 +602,13 @@ public class TrainsDAO {
         			switch (compartment) {
     				case "ACseats":
     					if(train.getACCompartmentNo()!=0) {
-    						for(String days : train.getPeriodicity()) {
-    		    				if(days.equals(dayOfWeek)) {
-    		    					result.add(train);
-    		    				}
+    						result.add(train);
     						}
-    					}
     						
     					break;
     				case "NONACseats":
     					if(train.getNONACCompartmentNo()!=0) {
-    						for(String days : train.getPeriodicity()) {
-    		    				if(days.equals(dayOfWeek)) {
-    		    					result.add(train);
-    		    				}
-    						}
+    						result.add(train);
     					}
     						
     					break;
@@ -634,20 +617,41 @@ public class TrainsDAO {
     				}
         			
         		}
+        		if(dateString != null && !dateString.isEmpty()) {
+        	        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        	        LocalDate date = LocalDate.parse(dateString, formatter);
+        	        String dayOfWeek = date.getDayOfWeek().name().substring(0,3);
+        			for(Train train: result) {
+        				for(String days: train.getPeriodicity()) {
+        					if(days.equals(dayOfWeek)) {
+        						finalResult.add(train);
+        					}
+        				}
+        			}
+        			return finalResult;
+        		}
         		return result;
         		
         		
-        	}
+        	}      	
         while(rs.next()) {
         	Train train = this.getTrain(rs.getString("TrainName"));
-        	for(String days : train.getPeriodicity()) {
-				if(days.equals(dayOfWeek)) {
-					result.add(train);
+			result.add(train);
+        }
+        if(dateString != null && !dateString.isEmpty()) {
+	        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	        LocalDate date = LocalDate.parse(dateString, formatter);
+	        String dayOfWeek = date.getDayOfWeek().name().substring(0,3);
+			for(Train train: result) {
+				for(String days: train.getPeriodicity()) {
+					if(days.equals(dayOfWeek)) {
+						finalResult.add(train);
+					}
 				}
 			}
-        }
+			return finalResult;
+		}
         return result;
-        	
         }
 		catch(Exception e){
 			System.out.println(e);
