@@ -8,21 +8,27 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.railway.model.Station;
 import com.railway.model.Train;
 
 public class JSONFormatter {
-	public JSONArray stationstoArray(String path) {
+	public ArrayList<Station> stationstoArray(String path) {
+		ArrayList<Station> stationList = new ArrayList<Station>();
 		JSONParser jsonParser = new JSONParser();
 		try (FileReader reader = new FileReader(path)) {
-			Object obj = jsonParser.parse(reader);
-			JSONArray json = (JSONArray) obj;
-			return json;
+			JSONArray obj = (JSONArray)jsonParser.parse(reader);;
+			for(Object res : obj) {
+				Station station = new Station();
+				station.setName((String)((JSONObject)res).get("name"));
+				station.setCode((String)((JSONObject)res).get("code"));
+				stationList.add(station);
+			}
 		}
 
 		catch (Exception e) {
 			System.out.println(e);
 		}
-		return null;
+		return stationList;
 	}
 
 	public List<Train> trainsToArray(String filePath) {

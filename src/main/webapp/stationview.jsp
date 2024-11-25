@@ -88,23 +88,22 @@ th {
 
 	ArrayList<Station> stationList = new ArrayList<Station>();
 
-	if (request.getParameter("stname") != null && request.getParameter("stname") != "" ) {
-		if(request.getParameter("page") != null){
+	if (request.getParameter("stname") != null && request.getParameter("stname") != "") {
+		if (request.getParameter("page") != null) {
 			pageno = Integer.parseInt(request.getParameter("page"));
 		}
-		stationList = stationsdao.searchStation(request.getParameter("stname"), (pageno - 1) * amount,amount);
+		stationList = stationsdao.searchStation(request.getParameter("stname"), (pageno - 1) * amount, amount);
 		out.println((pageno - 1) * amount + " - "
 		+ Math.min(pageno * amount, stationsdao.getAmountOfDataSearch(request.getParameter("stname"))) + " of "
-		+ stationsdao.getAmountOfDataSearch(request.getParameter("stname")));	
+		+ stationsdao.getAmountOfDataSearch(request.getParameter("stname")));
 		int totalRecords = stationsdao.getAmountOfDataSearch(request.getParameter("stname"));
 		totalPages = (int) Math.ceil(totalRecords * 1.0 / amount);
 	}
 
 	else {
-		System.out.println("In Else");
 		if (request.getParameter("page") != null) {
 			pageno = Integer.parseInt(request.getParameter("page"));
-		} 
+		}
 
 		stationList = stationsdao.getPage((pageno - 1) * amount, amount);
 		out.println((pageno - 1) * amount + " - " + Math.min(pageno * amount, stationsdao.getAmountOfData()) + " of "
@@ -120,8 +119,8 @@ th {
 
 	<form action="./stationview.jsp">
 		<br> <label for="stname">Station Name:</label><br> <input
-			type="text" id="stname" name="stname"> <input
-			type="submit" value="Search">
+			type="text" id="stname" name="stname"> <input type="submit"
+			value="Search">
 	</form>
 
 
@@ -148,7 +147,6 @@ th {
 			<%
 			}
 			}
-
 			%>
 		</tbody>
 	</table>

@@ -6,9 +6,6 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
 import com.railway.model.Station;
 import com.railway.utils.DAOConnection;
 import com.railway.utils.JSONFormatter;
@@ -18,6 +15,7 @@ public class StationsDAO {
 	DAOConnection connection = new DAOConnection();
 	Connection con = connection.getConnection();
 
+	
 	public Station getStation(String code) {
 		Station stationFromDB = new Station();
 		try {
@@ -36,19 +34,18 @@ public class StationsDAO {
 	}
 
 	public void JSONtoDB(String path) {
-		JSONArray array = json.stationstoArray(path);
+		ArrayList<Station> stationList = new JSONFormatter().stationstoArray(path);
 
 		try {
 			String insertQuery = "INSERT IGNORE INTO Stations (Name,Code) VALUES (?,?) ON DUPLICATE KEY UPDATE Name = VALUES(Name),Code = VALUES(Code);";
 			PreparedStatement preparedStatement = con.prepareStatement(insertQuery);
-			for (int i = 0; i < array.size(); i++) {
-				JSONObject obj = (JSONObject) array.get(i);
-				preparedStatement.setString(1, (String) obj.get("name"));
-				preparedStatement.setString(2, (String) obj.get("code"));
+			for (Station station : stationList) {
+				preparedStatement.setString(1, station.getName());
+				preparedStatement.setString(2, station.getCode());
 				preparedStatement.addBatch();
 			}
 			preparedStatement.executeBatch();
-
+			
 		} catch (Exception e) {
 			System.out.println(e);
 		}

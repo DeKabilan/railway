@@ -18,9 +18,9 @@ TicketsDAO ticketsdao = new TicketsDAO();
 
 	}
 	
-	public void cancelTicket(Train train, Integer oldac,Integer oldnonac) {
-		trainsdao.updateSeats("NONACseats", train.getName(),oldnonac);
-		trainsdao.updateSeats("ACseats", train.getName(),oldac);
+	public void cancelTicket(Train train, Integer oldac,Integer oldnonac, String travelDate) {
+		trainsdao.updateSeats("NONACseats", train.getName(),oldnonac,travelDate);
+		trainsdao.updateSeats("ACseats", train.getName(),oldac,travelDate);
 	}
 	
 	public void createTicket(String username, ArrayList<Ticket> ticketList) {
@@ -38,8 +38,8 @@ TicketsDAO ticketsdao = new TicketsDAO();
 		}
 	}
 	
-	public Boolean canBook(String compartment, Train train, Integer numOfTravelers) {
-		if (trainsdao.getSeats(compartment, train.getName()) < numOfTravelers) {
+	public Boolean canBook(String compartment, Train train, Integer numOfTravelers, String travelDate) {
+		if (trainsdao.getSeats(compartment, train.getName(),travelDate) < numOfTravelers) {
 			return true;
 		}
 		return false;

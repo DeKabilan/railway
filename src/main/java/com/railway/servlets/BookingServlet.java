@@ -87,8 +87,9 @@ public class BookingServlet extends HttpServlet {
 					Train train = trainsdao.getTrain((String) request.getParameter("train"));
 					session.setAttribute("train", train);
 					session.setAttribute("seats", request.getParameter("numOfTravelers"));
+					String travelDate = (String)session.getAttribute("travelDate");
 					session.setAttribute("ticketType2", request.getParameter("compartment"));
-					if (tickethandler.canBook((String) request.getParameter("compartment"), train, Integer.parseInt(request.getParameter("numOfTravelers")))) {
+					if (tickethandler.canBook((String) request.getParameter("compartment"), train, Integer.parseInt(request.getParameter("numOfTravelers")),travelDate)) {
 						throw new CustomExceptions(CustomExceptions.Exceptions.NO_SEATS_LEFT);
 					}
 					RequestDispatcher rd = request.getRequestDispatcher("book.jsp");
@@ -96,10 +97,15 @@ public class BookingServlet extends HttpServlet {
 					return;
 				}
 				if(path.equals("/cost")){
+					String travelDate = (String) session.getAttribute("travelDate");
 					ArrayList<Ticket> ticketList = new ArrayList<Ticket>();
 					Train train = (Train) session.getAttribute("train");
-					int oldSeatsAC = trainsdao.getSeats("ACseats", train.getName());
-					int oldSeatsNONAC = trainsdao.getSeats("NONACseats", train.getName());
+					
+					
+					
+
+					int oldSeatsAC = trainsdao.getSeats("ACseats", train.getName(),travelDate);
+					int oldSeatsNONAC = trainsdao.getSeats("NONACseats", train.getName(),travelDate);
 					session.setAttribute("oldac", oldSeatsAC);
 					session.setAttribute("oldnonac", oldSeatsNONAC);
 					int cost = 0;
@@ -129,7 +135,7 @@ public class BookingServlet extends HttpServlet {
 						} else {
 							ticket.setSeatNo(tickethandler.getSeatNo(ticket));
 							trainsdao.updateSeats(ticket.getType(), ticket.getTrain().getName(),
-									trainsdao.getSeats(ticket.getType(), ticket.getTrain().getName()) - 1);
+									trainsdao.getSeats(ticket.getType(), ticket.getTrain().getName(),travelDate) - 1,travelDate);
 						}
 						ticketList.add(ticket);
 					}

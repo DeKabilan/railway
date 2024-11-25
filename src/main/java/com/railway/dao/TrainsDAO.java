@@ -3,10 +3,12 @@ package com.railway.dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
+import com.railway.model.Station;
 import com.railway.model.Train;
 import com.railway.utils.DAOConnection;
 import com.railway.utils.JSONFormatter;
@@ -163,7 +165,7 @@ public class TrainsDAO {
 	}
 	
 	
-    public void trainListToDB(String path) {
+    public void JSONtoDB(String path) {
     	JSONFormatter jsondec = new JSONFormatter();
     	for(Train trains : jsondec.trainsToArray(path)) {
     		this.createTrain(trains);
@@ -199,13 +201,31 @@ public class TrainsDAO {
         LocalDate date = LocalDate.parse(dateString, formatter);
         String dayOfWeek = date.getDayOfWeek().name().substring(0,3);
     	try {
-			StringBuilder query = new StringBuilder("SELECT DISTINCT TrainName, Departure, Arrival FROM\n"
-					+ "(WITH combination as (SELECT Trains.TrainID , TrainName, Routes.RouteID, Source, Destination, Arrival, Departure FROM Trains Join Routes on Trains.TrainID = Routes.TrainID)\n"
-					+ "SELECT TrainName, combination.RouteID, Source, Destination,Isource,Idestination, Departure, Arrival FROM combination JOIN \n"
-					+ "(SELECT s1.Stopcode as Isource, s1.RouteID, s2.StopCode as Idestination FROM Stops as s1 JOIN Stops s2 ON s1.RouteID = s2.RouteID WHERE s1.Sequence < s2.Sequence) as intermediate\n"
-					+ "ON combination.RouteID = intermediate.RouteID) result \n"
-					+ "WHERE ((Source = ? and Destination = ?) or (Source = ? and Isource = ? ) or (Source = ? and Idestination = ?) or (Isource = ? and Idestination = ?) or (Isource = ? and Destination = ?))");
-			if(dateString.equals(today)) {
+    		 StringBuilder query = new StringBuilder(
+    		            "SELECT DISTINCT TrainName, Departure, Arrival FROM (" +
+    		            "    WITH combination AS (" +
+    		            "        SELECT Trains.TrainID, TrainName, Routes.RouteID, Source, Destination, Arrival, Departure " +
+    		            "        FROM Trains " +
+    		            "        JOIN Routes ON Trains.TrainID = Routes.TrainID" +
+    		            "    ) " +
+    		            "    SELECT DISTINCT TrainName, combination.RouteID, Source, Destination, Isource, Idestination, Departure, Arrival " +
+    		            "    FROM combination " +
+    		            "    JOIN (" +
+    		            "        SELECT s1.StopCode AS Isource, s1.RouteID, s2.StopCode AS Idestination " +
+    		            "        FROM Stops AS s1 " +
+    		            "        JOIN Stops s2 ON s1.RouteID = s2.RouteID " +
+    		            "        WHERE s1.Sequence <= s2.Sequence" +
+    		            "    ) AS intermediate " +
+    		            "    ON combination.RouteID = intermediate.RouteID" +
+    		            ") result " +
+    		            "WHERE " +
+    		            "((Source = ? AND Destination = ?) OR " +
+    		            "(Source = ? AND Isource = ?) OR " +
+    		            "(Source = ? AND Idestination = ?) OR " +
+    		            "(Isource = ? AND Idestination = ?) OR " +
+    		            "(Isource = ? AND Destination = ?))"
+    		        );			
+    		 if(dateString.equals(today)) {
 				if(hour>6) {
 					query.append(" AND Departure>\"06:00\"");
 				}
@@ -250,8 +270,7 @@ public class TrainsDAO {
 	public void createTrain(Train TrainObject) {
 		try {
 			con.setAutoCommit(false);
-			String query = "INSERT INTO Trains (TrainName, Departure, Arrival, SeatAlgorithm) VALUES (?,?,?,?)  ON DUPLICATE KEY UPDATE TrainName = VALUES(TrainName)"
-					+ ",Departure = VALUES(Departure),Arrival = VALUES(Arrival),SeatAlgorithm = VALUES(SeatAlgorithm);";
+			String query = "INSERT INTO Trains (TrainName, Departure, Arrival, SeatAlgorithm) VALUES (?,?,?,?)";
 			PreparedStatement pst1 = con.prepareStatement(query);
 			pst1.setString(1, TrainObject.getName());
 			pst1.setString(2, TrainObject.getDeparture());
@@ -316,12 +335,7 @@ public class TrainsDAO {
 			pst7.executeBatch();
 			Integer ACseats =TrainObject.getACCompartmentNo()*TrainObject.getACCompartmentSeats();
 			Integer NONACseats =TrainObject.getNONACCompartmentNo()*TrainObject.getNONACCompartmentSeats();
-			query = "INSERT INTO Seats (TrainID, ACseats, NONACseats) VALUES (?,?,?);";
-			PreparedStatement pst8 = con.prepareStatement(query);
-			pst8.setInt(1, TrainID);
-			pst8.setInt(2, ACseats);
-			pst8.setInt(3, NONACseats);
-			pst8.execute();
+			
 			con.commit();
 			
 		}
@@ -347,17 +361,12 @@ public class TrainsDAO {
 	public void deleteTrain(String TrainName) {
 		
 	        try {
-	            con.setAutoCommit(false);
+	            con.setAutoCommit(false); 
 
 	            String query = "DELETE FROM Compartments WHERE TrainID = (SELECT TrainID FROM Trains WHERE TrainName = ?)";
 	            try (PreparedStatement pst1 = con.prepareStatement(query)) {
 	                pst1.setString(1, TrainName);
 	                pst1.executeUpdate();
-	            }
-	            query = "DELETE FROM Seats WHERE TrainID = (SELECT TrainID FROM Trains WHERE TrainName = ?)";
-	            try (PreparedStatement pst = con.prepareStatement(query)) {
-	            	pst.setString(1, TrainName);
-	            	pst.executeUpdate();
 	            }
 
 	            query = "DELETE FROM Stops WHERE RouteID = (SELECT RouteID FROM Routes WHERE TrainID = (SELECT TrainID FROM Trains WHERE TrainName = ?))";
@@ -486,12 +495,13 @@ public class TrainsDAO {
 	    }
 	}
 	
-	public int getSeats(String compartment, String trainName) {
+	public int getSeats(String compartment, String trainName, String day) {
 		int result = 0;
 		try {
-	       String query = "SELECT * FROM Seats WHERE TrainID = (SELECT TrainID FROM Trains WHERE TrainName = ?)";
+	       String query = "SELECT * FROM Seats WHERE TrainID = (SELECT TrainID FROM Trains WHERE TrainName = ? and Day = ?)";
 	       PreparedStatement pst = con.prepareStatement(query);
 	       pst.setString(1, trainName);
+	       pst.setString(2, day);
 	       ResultSet rs = pst.executeQuery();
 	       if(rs.next()) {
 	    	   result = rs.getInt(compartment);  
@@ -504,13 +514,14 @@ public class TrainsDAO {
 		}
 	}
 	
-	public void updateSeats(String compartment, String trainName, int newSeats) {
+	public void updateSeats(String compartment, String trainName, int newSeats, String day) {
 		try {
 	       String query = "UPDATE Seats\n"
 	       		+ "SET "+compartment+" = "+newSeats+"\n"
-	       		+ "WHERE TrainID = (SELECT TrainID FROM Trains WHERE TrainName = ?);";
+	       		+ "WHERE TrainID = (SELECT TrainID FROM Trains WHERE TrainName = ?) and Day = ?;";
 	       PreparedStatement pst = con.prepareStatement(query);
 	       pst.setString(1, trainName);
+	       pst.setString(2, day);
 	       pst.executeUpdate();
 	       }
 		catch(Exception e) {
@@ -528,34 +539,34 @@ public class TrainsDAO {
         	StringBuilder query = new StringBuilder("SELECT DISTINCT TrainName, Departure, Arrival FROM\n"
         			+ "(WITH combination as (SELECT Trains.TrainID , TrainName, Routes.RouteID, Source, Destination, Arrival, Departure FROM Trains Join Routes on Trains.TrainID = Routes.TrainID)\n"
         			+ "SELECT TrainName, combination.RouteID, Source, Destination,Isource,Idestination, Departure, Arrival FROM combination JOIN \n"
-        			+ "(SELECT s1.Stopcode as Isource, s1.RouteID, s2.StopCode as Idestination FROM Stops as s1 JOIN Stops s2 ON s1.RouteID = s2.RouteID WHERE s1.Sequence < s2.Sequence) as intermediate\n"
+        			+ "(SELECT s1.Stopcode as Isource, s1.RouteID, s2.StopCode as Idestination FROM Stops as s1 JOIN Stops s2 ON s1.RouteID = s2.RouteID WHERE s1.Sequence <= s2.Sequence) as intermediate\n"
         			+ "ON combination.RouteID = intermediate.RouteID) result \n"
         			+ "WHERE ((Source = ? and Destination = ?) or (Source = ? and Isource = ? ) or (Source = ? and Idestination = ?) or (Isource = ? and Idestination = ?) or (Isource = ? and Destination = ?))");
         	
         	if(dateString != null && !dateString.isEmpty() && dateString.equals(today)) {
         	
-				if(hour>6) {
+				if(hour>=6) {
 					query.append(" AND Departure>\"0600\"");
 				}
-				else if(hour>12) {
+				else if(hour>=12) {
 					query.append(" AND Departure>\"1200\"");
 				}
-				else if(hour>16) {
+				else if(hour>=16) {
 					query.append(" AND Departure>\"1600\"");
 				}
 			}
         	if (departure != null && !departure.isEmpty()) {
-        		switch (departure) {
-        		case "Morning":
+        		switch (departure.toLowerCase()) {
+        		case "morning":
         			query.append(" AND (Departure>=\"06:00\" AND Departure <\"12:00\")");
         			break;
-        		case "Afternoon":
-        			query.append(" AND (Departure>=\"12:00\" AND Departure <\"18:00)\"");
+        		case "afternoon":
+        			query.append(" AND (Departure>=\"12:00\" AND Departure <\"18:00\")");
         			break;
-        		case "Evening":
+        		case "evening":
         			query.append(" AND (Departure>=\"18:00\" AND Departure <\"24:00\")");
         			break;
-        		case "Night":
+        		case "night":
         			query.append(" AND (Departure>=\"00:00\" AND Departure <\"06:00\")");
         			break;
         		default:
@@ -565,17 +576,17 @@ public class TrainsDAO {
         	
         	
         	if (arrival != null && !arrival.isEmpty()) {
-        		switch (arrival) {
-        		case "Morning":
+        		switch (arrival.toLowerCase()) {
+        		case "morning":
         			query.append(" AND (Arrival>=\"06:00\" AND Arrival <\"12:00\")");
         			break;
-        		case "Afternoon":
+        		case "afternoon":
         			query.append(" AND (Arrival>=\"12:00\" AND Arrival <\"18:00\")");
         			break;
-        		case "Evening":
+        		case "evening":
         			query.append(" AND (Arrival>=\"18:00\" AND Arrival <\"24:00\")");
         			break;
-        		case "Night":
+        		case "night":
         			query.append(" AND (Arrival>=\"00:00\" AND Arrival <\"06:00\")");
         			break;
         		default:
@@ -610,7 +621,6 @@ public class TrainsDAO {
     					if(train.getNONACCompartmentNo()!=0) {
     						result.add(train);
     					}
-    						
     					break;
     				default:
     					break;
@@ -659,5 +669,66 @@ public class TrainsDAO {
 		}
 	}
 	
+	public Boolean ifSeatDayExist(String day,String TrainName) throws SQLException {
+		String query = "SELECT * FROM Seats WHERE Day = ? and TrainID = (SELECT TrainID from Trains WHERE TrainName = ?)" ;
+		PreparedStatement pst = con.prepareStatement(query);
+		pst.setString(1, day);
+		pst.setString(2, TrainName);
+		ResultSet rs = pst.executeQuery();
+		if(rs.next()) {
+			return true;
+		}
+		return false;
+	}
+	public void createSeat(String day, int ACseats, int NONACseats, String TrainName) throws SQLException {
+			String query = "INSERT INTO Seats (TrainID, Day, ACseats, NONACseats) VALUES ((SELECT TrainID from Trains WHERE TrainName = ?),?,?,?);";
+			PreparedStatement pst8 = con.prepareStatement(query);
+			pst8.setString(1, TrainName);
+			pst8.setString(2, day);
+			pst8.setInt(3, ACseats);
+			pst8.setInt(4, NONACseats);
+			pst8.execute();
+			
+		}
 	
+	public int getAmountOfDataSearch(String trainName) {
+		int result = 0;
+		try {
+			String query = "SELECT COUNT(*) as count FROM Trains WHERE TrainName LIKE ?;";
+			PreparedStatement ps = con.prepareStatement(query);
+			ps.setString(1, "%"+trainName+"%");
+			ResultSet rs = ps.executeQuery();
+			if (rs.next()) {
+				result = rs.getInt("count");
+			}
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		return result;
+	}
+	
+	public ArrayList<Train> searchTrain(String trainName, int pageNumber, int amount) {
+	    ArrayList<Train> trainList = new ArrayList<Train>();
+	    String query = "SELECT * FROM Trains WHERE TrainName LIKE ? ORDER BY TrainName LIMIT ? OFFSET ?";
+	    
+	    try {
+	        PreparedStatement ps = con.prepareStatement(query);
+	        ps.setString(1, "%" + trainName + "%"); 
+	        ps.setInt(2, amount);
+	        ps.setInt(3,pageNumber);
+
+	        ResultSet rs = ps.executeQuery();
+	        while (rs.next()) {
+	        	
+	            trainList.add(this.getTrain(rs.getString("trainName")));
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return trainList;
+	    
+	}
 }
+	
+
+	

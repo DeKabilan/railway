@@ -94,20 +94,23 @@ public class TicketsAPIServlet extends HttpServlet {
 							0);
 					for (Train train : trainList) {
 						if (train.getName().equals(trainName)) {
+							if(!trainsdao.ifSeatDayExist(dateOfTravel, trainName)) {
+								trainsdao.createSeat(dateOfTravel, train.getACCompartmentNo()*train.getACCompartmentSeats(), train.getNONACCompartmentNo()*train.getNONACCompartmentSeats(), trainName);
+							}
 							if (type.equals("AC")) {
-								System.out.println();
-								if (!(trainsdao.getSeats("ACseats", trainName) > passengers.size())) {
+								if (!(trainsdao.getSeats("ACseats", trainName,dateOfTravel) > passengers.size())) {
 									throw new CustomExceptions(CustomExceptions.Exceptions.NO_SEATS_LEFT);
 								}
 								trainsdao.updateSeats("ACseats", trainName,
-										trainsdao.getSeats("ACseats", trainName) - 1);
+										trainsdao.getSeats("ACseats", trainName,dateOfTravel) - 1,dateOfTravel);
 							} else {
-								if (!(trainsdao.getSeats("NONACseats", trainName) > passengers.size())) {
+								if (!(trainsdao.getSeats("NONACseats", trainName,dateOfTravel) > passengers.size())) {
 									throw new CustomExceptions(CustomExceptions.Exceptions.NO_SEATS_LEFT);
 								}
 								trainsdao.updateSeats("NONACseats", trainName,
-										trainsdao.getSeats("NONACseats", trainName) - 1);
+										trainsdao.getSeats("NONACseats", trainName,dateOfTravel) - 1,dateOfTravel);
 							}
+							
 							tickethandler.createTicket(username, trainName, type, currentDate, dateOfTravel,
 									passengers);
 							throw new CustomExceptions(CustomExceptions.Exceptions.OPERATION_SUCCESSFULL);

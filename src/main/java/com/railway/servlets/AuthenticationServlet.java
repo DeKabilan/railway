@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.railway.dao.StationsDAO;
 import com.railway.dao.TrainsDAO;
 import com.railway.handlers.AuthenticationHandler;
 import com.railway.utils.CustomExceptions;
@@ -26,10 +27,11 @@ public class AuthenticationServlet extends HttpServlet {
 	LocalDate currentDate = LocalDate.now();
 	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 	String date = currentDate.format(formatter);
+	StationsDAO stationsdao = new StationsDAO();
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-//		trainsdao.trainListToDB("/home/kabilan-22527/eclipse-workspace/railway/src/main/resources/trains.json");
+//		stationsdao.JSONtoDB("/home/kabilan-22527/Backup/railway/src/main/resources/stations.json");
 		HttpSession session = request.getSession();
 		session.setAttribute("today", date);
 		session.setAttribute("hour", hour);
@@ -109,8 +111,6 @@ public class AuthenticationServlet extends HttpServlet {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			// Logger
-			// error response
 		}
 
 	}

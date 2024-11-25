@@ -31,8 +31,9 @@ public class UserServlet extends HttpServlet {
 				}
 				String path = (String) request.getServletPath();
 				if (path.equals("/cancel")) {
+					String travelDate = (String)session.getAttribute("travelDate");
 					tickethandler.cancelTicket((Train) session.getAttribute("train"),
-							(Integer) session.getAttribute("oldnonac"), (Integer) session.getAttribute("oldac"));
+							(Integer) session.getAttribute("oldnonac"), (Integer) session.getAttribute("oldac"),travelDate);
 					RequestDispatcher rd = request.getRequestDispatcher("cancelled.jsp");
 					rd.forward(request, response);
 					return;
@@ -45,6 +46,8 @@ public class UserServlet extends HttpServlet {
 					return;
 				}
 				session.setAttribute("firstTime", true);
+				session.setAttribute("travelDate", request.getParameter("travelDate"));
+
 				RequestDispatcher rd = request.getRequestDispatcher("userpage.jsp");
 				rd.forward(request, response);
 				return;

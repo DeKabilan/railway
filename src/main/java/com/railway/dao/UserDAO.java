@@ -9,12 +9,13 @@ import com.railway.utils.DAOConnection;
 public class UserDAO {
 	
 	DAOConnection connection = new DAOConnection();
-	Connection con = connection.getConnection();
+	
 	
 	//------Get User Data------
 	
 	public User getUser(String email) {
 		User userFromDB = new User();
+		Connection con = connection.getConnection();
 		try{
 			Statement st = con.createStatement();
 			ResultSet rs = st.executeQuery("SELECT * FROM Users WHERE Email = \'"+email+"\'");
@@ -40,6 +41,7 @@ public class UserDAO {
 	
 	
 	public Boolean isUserExist(String email) {
+		Connection con = connection.getConnection();
 		try{
 			Statement st = con.createStatement();
 			ResultSet rs = st.executeQuery("SELECT * FROM Users WHERE Email = \'"+email+"\'");
@@ -57,6 +59,7 @@ public class UserDAO {
 	//--------Create User--------
 	
 	public void createUser(String email,String pass) {
+		Connection con = connection.getConnection();
 		try{
 			Statement st = con.createStatement();
 			st.execute("INSERT INTO Users (Email,Password,Role) VALUES (\""+email+"\",\""+ pass+"\", 1)");

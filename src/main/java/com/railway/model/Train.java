@@ -2,7 +2,7 @@ package com.railway.model;
 
 import java.util.ArrayList;
 
-import com.railway.utils.Algorithms;
+import com.railway.handlers.Algorithms.Algorithms;
 
 public class Train {
 

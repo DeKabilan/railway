@@ -20,6 +20,7 @@ public class TrainFiltersAPIServlet extends HttpServlet {
 	ErrorDecorator errordecorator = new ErrorDecorator();
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) {
+		response.setContentType("application/json");
 		try {
 			try {
 				if (request.getParameter("source") == null || request.getParameter("source").isEmpty()) {
@@ -36,7 +37,7 @@ public class TrainFiltersAPIServlet extends HttpServlet {
 								.toJSONString());
 				return;
 			} catch (CustomExceptions ce) {
-				response.getWriter().append(ce.getCode() + " : " + ce.getMessage());
+				response.getWriter().append(new ErrorDecorator().decorate(ce.getException()).toJSONString());
 			}
 
 		} catch (Exception e) {

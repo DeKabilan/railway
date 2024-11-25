@@ -52,7 +52,7 @@ input[type="submit"] {
 <body>
 	<h1>User Dashboard</h1>
 	<a href="/railway/stationview.jsp">Click to Search Stations</a><br>
-	<a href="/railway/trainview.jsp">Click to View All Trains</a><br>
+	<a href="/railway/trainview.jsp">Click to Search Trains</a><br>
 	<a href="./history">Click to View Tickets</a><br>
 	<a href="./login">Click to logout</a>
 	<form action="./user" method="POST">

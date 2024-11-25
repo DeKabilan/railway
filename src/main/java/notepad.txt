@@ -1,0 +1,2 @@
+stationsDAO.JSONtoDB("/home/kabilan-22527/Backup/railway/src/main/resources/stations.json");
+trainsDAO.JSONtoDB("/home/kabilan-22527/Backup/railway/src/main/resources/trains.json");

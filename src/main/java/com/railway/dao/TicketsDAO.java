@@ -98,6 +98,7 @@ public class TicketsDAO {
 				Ticket ticket = new Ticket();
 				ticket.setTrain(train);
 				ticket.setType(type);
+				ticket.setTravelDate(travelDate);
 				pst1.setInt(1, batchID);
 				pst1.setString(2, (String)passenger.get("name"));
 				pst1.setInt(3, Integer.parseInt((String)passenger.get("age")));

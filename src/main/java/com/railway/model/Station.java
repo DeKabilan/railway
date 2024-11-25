@@ -25,6 +25,11 @@ public class Station {
 		return name;
 	}
 
+	@Override
+	public String toString() {
+		return "Station [code=" + code + ", name=" + name + ", message=" + message + "]";
+	}
+
 	public void setName(String name) {
 		this.name = name;
 	}
