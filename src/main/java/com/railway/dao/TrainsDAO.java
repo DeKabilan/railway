@@ -333,8 +333,7 @@ public class TrainsDAO {
 			pst7.setInt(5, TrainObject.getNONACCompartmentCost());
 			pst7.addBatch();
 			pst7.executeBatch();
-			Integer ACseats =TrainObject.getACCompartmentNo()*TrainObject.getACCompartmentSeats();
-			Integer NONACseats =TrainObject.getNONACCompartmentNo()*TrainObject.getNONACCompartmentSeats();
+
 			
 			con.commit();
 			

@@ -45,7 +45,7 @@ public class TicketsDAO {
 				pst1.setString(2, eachTicket.getName());
 				pst1.setInt(3, eachTicket.getAge());
 				if (eachTicket.getMail() == "") {
-					pst1.setString(4, "Not Provided");
+					pst1.setString(4, "Not Provided");		
 				} else {
 					pst1.setString(4, eachTicket.getMail());
 				}
@@ -88,7 +88,7 @@ public class TicketsDAO {
 			pst.executeUpdate();
 
 			ResultSet generatedKeys = pst.getGeneratedKeys();
-			int batchID = 0;
+			int batchID = 0;		
 			if (generatedKeys.next()) {
 				batchID = generatedKeys.getInt(1);
 			}

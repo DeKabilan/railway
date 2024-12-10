@@ -47,13 +47,7 @@ public class BookingServlet extends HttpServlet {
 					return;
 
 				}
-				if (path.equals("/cost")) {
-					RequestDispatcher rd = request.getRequestDispatcher("errornoaccess.jsp");
-					rd.forward(request, response);
-					return;
-
-				}
-				if (path.equals("/book")) {
+				if (path.equals("/cost") || path.equals("/book")) {
 					RequestDispatcher rd = request.getRequestDispatcher("errornoaccess.jsp");
 					rd.forward(request, response);
 					return;

@@ -26,14 +26,16 @@ public class UserServlet extends HttpServlet {
 		try {
 			try {
 				HttpSession session = request.getSession();
-				if (session.getAttribute("userRole")==null || !(((String) session.getAttribute("userRole")).equals("user"))) {
+				if (session.getAttribute("userRole") == null
+						|| !(((String) session.getAttribute("userRole")).equals("user"))) {
 					throw new CustomExceptions(CustomExceptions.Exceptions.ACCESS_DENIED);
 				}
 				String path = (String) request.getServletPath();
 				if (path.equals("/cancel")) {
-					String travelDate = (String)session.getAttribute("travelDate");
+					String travelDate = (String) session.getAttribute("travelDate");
 					tickethandler.cancelTicket((Train) session.getAttribute("train"),
-							(Integer) session.getAttribute("oldnonac"), (Integer) session.getAttribute("oldac"),travelDate);
+							(Integer) session.getAttribute("oldnonac"), (Integer) session.getAttribute("oldac"),
+							travelDate);
 					RequestDispatcher rd = request.getRequestDispatcher("cancelled.jsp");
 					rd.forward(request, response);
 					return;

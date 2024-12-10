@@ -15,7 +15,6 @@ public class StationsDAO {
 	DAOConnection connection = new DAOConnection();
 	Connection con = connection.getConnection();
 
-	
 	public Station getStation(String code) {
 		Station stationFromDB = new Station();
 		try {
@@ -45,7 +44,7 @@ public class StationsDAO {
 				preparedStatement.addBatch();
 			}
 			preparedStatement.executeBatch();
-			
+
 		} catch (Exception e) {
 			System.out.println(e);
 		}
@@ -55,7 +54,8 @@ public class StationsDAO {
 	public Boolean isStationExist(String code) {
 		try {
 			Statement st = con.createStatement();
-			ResultSet rs = st.executeQuery("SELECT * FROM Stations WHERE Code = \'" + code + "\' OR Name = \"" + code + "\"");
+			ResultSet rs = st
+					.executeQuery("SELECT * FROM Stations WHERE Code = \'" + code + "\' OR Name = \"" + code + "\"");
 			if (rs.next()) {
 				return true;
 			} else
@@ -74,9 +74,8 @@ public class StationsDAO {
 		} catch (Exception e) {
 			System.out.println(e);
 		}
-
 	}
-
+	
 	public void deleteStation(String code) {
 		try {
 			Statement st = con.createStatement();
@@ -84,7 +83,6 @@ public class StationsDAO {
 		} catch (Exception e) {
 			System.out.println(e);
 		}
-
 	}
 
 	public void updateStation(String code, String newCode, String newName) {
@@ -95,7 +93,6 @@ public class StationsDAO {
 		} catch (Exception e) {
 			System.out.println(e);
 		}
-
 	}
 
 	public int getAmountOfData() {
@@ -134,15 +131,14 @@ public class StationsDAO {
 		}
 		return result;
 	}
-	
 
 	public int getAmountOfDataSearch(String stationName) {
 		int result = 0;
 		try {
 			String query = "SELECT COUNT(*) as count FROM Stations WHERE Name LIKE ? or Code Like ?;";
 			PreparedStatement ps = con.prepareStatement(query);
-			ps.setString(1, "%"+stationName+"%");
-			ps.setString(2, "%"+stationName+"%");
+			ps.setString(1, "%" + stationName + "%");
+			ps.setString(2, "%" + stationName + "%");
 			ResultSet rs = ps.executeQuery();
 			if (rs.next()) {
 				result = rs.getInt("count");
@@ -152,51 +148,48 @@ public class StationsDAO {
 		}
 		return result;
 	}
-	
-	public ArrayList<Station> searchStation(String stationName, int pageNumber, int amount) {
-	    ArrayList<Station> stationList = new ArrayList<Station>();
-	    String query = "SELECT * FROM Stations WHERE Name LIKE ? or Code LIKE ? ORDER BY Name LIMIT ? OFFSET ?";
-	    
-	    try {
-	        PreparedStatement ps = con.prepareStatement(query);
-	        ps.setString(1, "%" + stationName + "%"); 
-	        ps.setString(2, "%"+stationName+"%");
-	        ps.setInt(3, amount);
-	        ps.setInt(4,pageNumber);
 
-	        ResultSet rs = ps.executeQuery();
-	        while (rs.next()) {
-	            Station station = new Station();
-	            station.setCode(rs.getString("Code"));
-	            station.setName(rs.getString("Name"));
-	            stationList.add(station);
-	        }
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }
-	    return stationList;
-	    
+	public ArrayList<Station> searchStation(String stationName, int pageNumber, int amount) {
+		ArrayList<Station> stationList = new ArrayList<Station>();
+		String query = "SELECT * FROM Stations WHERE Name LIKE ? or Code LIKE ? ORDER BY Name LIMIT ? OFFSET ?";
+
+		try {
+			PreparedStatement ps = con.prepareStatement(query);
+			ps.setString(1, "%" + stationName + "%");
+			ps.setString(2, "%" + stationName + "%");
+			ps.setInt(3, amount);
+			ps.setInt(4, pageNumber);
+
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				Station station = new Station();
+				station.setCode(rs.getString("Code"));
+				station.setName(rs.getString("Name"));
+				stationList.add(station);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return stationList;
+
 	}
-	
-	public ArrayList<Station> getEveryStation(){
+
+	public ArrayList<Station> getEveryStation() {
 		ArrayList<Station> stationList = new ArrayList<Station>();
 		try {
 			String query = "SELECT * FROM Stations";
 			PreparedStatement ps = con.prepareStatement(query);
 			ResultSet rs = ps.executeQuery();
-			while(rs.next()) {
+			while (rs.next()) {
 				Station station = new Station();
 				station.setName(rs.getString("Name"));
 				station.setCode(rs.getString("Code"));
 				stationList.add(station);
 			}
-		}
-		catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return stationList;
 	}
-	
-
 
 }

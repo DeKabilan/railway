@@ -68,6 +68,7 @@ th {
 <body>
 	<h1>Available Trains</h1>
 	<a href="./user">Back</a>
+	<p><b>Travel Date: </b><%=(String)session.getAttribute("travelDate")%></p>
 	<div id="trainOptions">
 		<form action="./search" method="GET">
 			<label for="departureTime">Departure Time:</label> <select

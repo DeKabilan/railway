@@ -26,13 +26,13 @@ public class DownloadServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		download.downloadPDFtoLocal(Integer.parseInt(request.getParameter("groupid")));
 		HttpSession session = request.getSession();
 		try {
 			try {
-				if (session.getAttribute("userRole")==null || !((String) session.getAttribute("userRole") == "user")) {
+				if (!"user".equals((String) session.getAttribute("userRole"))) {
 					throw new CustomExceptions(CustomExceptions.Exceptions.ACCESS_DENIED);
 				}
+				download.downloadPDFtoLocal(Integer.parseInt(request.getParameter("groupid")));
 				String fileName = "ticket.pdf";
 				File file = new File(PDF_DIRECTORY, fileName);
 				if (file.exists()) {

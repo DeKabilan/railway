@@ -4,11 +4,6 @@
          http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
          version="3.1">
 
-    <servlet>
-        <servlet-name>BootingHandler</servlet-name>
-        <servlet-class>com.railway.handlers</servlet-class>
-    </servlet>
-
     <!-- Custom error page for 404 Not Found -->
     <error-page>
         <error-code>404</error-code>

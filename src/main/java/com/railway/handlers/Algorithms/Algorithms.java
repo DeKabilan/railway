@@ -38,9 +38,7 @@ public enum Algorithms {
     private static String allocateSeat(Ticket ticket, String type) {
         TrainsDAO trainsDAO = new TrainsDAO();
         Train train = ticket.getTrain();
-        int totalSeats = ticket.getType().equals("ACseats")
-                ? train.getACCompartmentNo() * train.getACCompartmentSeats()
-                : train.getNONACCompartmentNo() * train.getNONACCompartmentSeats();
+        int totalSeats = ticket.getType().equals("ACseats") ? train.getACCompartmentNo() * train.getACCompartmentSeats() : train.getNONACCompartmentNo() * train.getNONACCompartmentSeats();
         int remainingSeats = trainsDAO.getSeats(ticket.getType(), train.getName(),ticket.getTravelDate());
         int ticketNo = 1 + (totalSeats - remainingSeats);
         int compartments = ticket.getType().equals("ACseats") ? train.getACCompartmentNo() : train.getNONACCompartmentNo();

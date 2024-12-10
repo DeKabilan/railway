@@ -31,14 +31,13 @@ public class AuthenticationServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-//		stationsdao.JSONtoDB("/home/kabilan-22527/Backup/railway/src/main/resources/stations.json");
 		HttpSession session = request.getSession();
+		session.setAttribute("userRole", null);
+		session.setAttribute("userName", null);
 		session.setAttribute("today", date);
 		session.setAttribute("hour", hour);
 		String path = request.getServletPath();
 		String Result = "";
-		session.setAttribute("userRole", null);
-		session.setAttribute("userName", null);
 		request.setAttribute("result", Result);
 		if ("/register".equals(path)) {
 			RequestDispatcher rd = request.getRequestDispatcher("register.jsp");
