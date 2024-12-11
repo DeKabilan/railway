@@ -38,7 +38,8 @@ public class CustomExceptions extends Exception {
 		NAME_IS_EMPTY("ERR017", "Name Cannot be Empty"),
 		INVALID_PARAMS("ERR018", "The Params are Incorrect or not Structured Properly"),
 		DATE_NOT_VALID("ERR019", "The Date Format is not Valid"),
-		NO_TRAIN_FOUND("ERR020", "No Train Found for the Given Source and Destination");
+		NO_TRAIN_FOUND("ERR020", "No Train Found for the Given Source and Destination"),
+		INVALID_TIME_FORMAT("ERR021", "The Given Time format is Invalid");
 
 		String code;
 		String message;

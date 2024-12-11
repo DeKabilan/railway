@@ -12,7 +12,7 @@ public interface TimeRule {
         try {
             LocalTime.parse(time, formatter);
         } catch (DateTimeParseException e) {
-            throw new CustomExceptions(CustomExceptions.Exceptions.INVALID_PARAMS);
+            throw new CustomExceptions(CustomExceptions.Exceptions.INVALID_TIME_FORMAT);
         }
     }
 }
