@@ -1,8 +1,9 @@
 package com.railway.handlers.Algorithms;
 
-import com.railway.dao.TrainsDAO;
+import com.railway.handlers.Algorithms.SeatTypes.AC;
+import com.railway.handlers.Algorithms.SeatTypes.NONAC;
+import com.railway.handlers.Algorithms.SeatTypes.Seat;
 import com.railway.model.Ticket;
-import com.railway.model.Train;
 
 public enum Algorithms {
 
@@ -35,28 +36,30 @@ public enum Algorithms {
     };
     public abstract String getSeatNo(Ticket ticket);
 
+    
     private static String allocateSeat(Ticket ticket, String type) {
-        TrainsDAO trainsDAO = new TrainsDAO();
-        Train train = ticket.getTrain();
-        int totalSeats = ticket.getType().equals("ACseats") ? train.getACCompartmentNo() * train.getACCompartmentSeats() : train.getNONACCompartmentNo() * train.getNONACCompartmentSeats();
-        int remainingSeats = trainsDAO.getSeats(ticket.getType(), train.getName(),ticket.getTravelDate());
-        int ticketNo = 1 + (totalSeats - remainingSeats);
-        int compartments = ticket.getType().equals("ACseats") ? train.getACCompartmentNo() : train.getNONACCompartmentNo();
-        int seatsPerCompartment = ticket.getType().equals("ACseats") ? train.getACCompartmentSeats() : train.getNONACCompartmentSeats();
-        String compartmentPrefix = ticket.getType().equals("ACseats") ? "AC" : "NONAC";
-        return findSeat(ticketNo, compartments, seatsPerCompartment, compartmentPrefix, type);
+    	Seat seat = null;
+        switch(ticket.getType()) {
+        case "ACseats":
+        	seat = new AC(ticket);
+        	break;
+        case "NONACseats":
+        	seat = new NONAC(ticket);
+        	break;
+        }
+        return findSeat(seat, type);
     }
 
-    private static String findSeat(int ticketNo, int compartments, int seatsPerCompartment, String prefix, String type) {
+    private static String findSeat(Seat seat, String type) {
     	switch(type) {
         case "odd":
-        	return new OddFirst().allocateSeats(ticketNo, compartments, seatsPerCompartment, prefix);
+        	return new OddFirst().allocateSeats(seat);
         case "even":
-        	return new EvenFirst().allocateSeats(ticketNo, compartments, seatsPerCompartment, prefix);
+        	return new EvenFirst().allocateSeats(seat);
         case "order":
-        	return new Ordered().allocateSeats(ticketNo, compartments, seatsPerCompartment, prefix);
+        	return new Ordered().allocateSeats(seat);
         case "scatter":
-        	return new Scattered().allocateSeats(ticketNo, compartments, seatsPerCompartment, prefix);
+        	return new Scattered().allocateSeats(seat);
         }
         return "Seat Not Allocated";
     }

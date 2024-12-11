@@ -15,6 +15,8 @@ import com.railway.decorator.ErrorDecorator;
 import com.railway.decorator.StationDecorator;
 import com.railway.handlers.AuthenticationHandler;
 import com.railway.handlers.StationHandler;
+import com.railway.handlers.APIValidators.EndpointValidator;
+import com.railway.handlers.APIValidators.StationEndpointValidator;
 import com.railway.model.Station;
 import com.railway.utils.CustomExceptions;
 import com.railway.utils.RequestBodyExtracter;
@@ -64,9 +66,11 @@ public class StationsAPIServlet extends HttpServlet {
 				String password = request.getHeader("password");
 				if (authenticationhandler.validateAdmin(username, password)) {
 					JSONObject json = new RequestBodyExtracter().extract(request);
+					EndpointValidator stationEndpointValidator = new StationEndpointValidator();
+					stationEndpointValidator.validate(json);
 					String name = (String) json.get("name");
 					String code = (String) json.get("code");
-					if (code == null || name == null || code.length() != 3) {
+					if(name==null || code == null) {
 						throw new CustomExceptions(CustomExceptions.Exceptions.INVALID_PARAMS);
 					}
 					if (stationsdao.isStationExist(code) || stationsdao.isStationExist(name)) {
@@ -122,17 +126,17 @@ public class StationsAPIServlet extends HttpServlet {
 				String password = request.getHeader("password");
 				if (authenticationhandler.validateAdmin(username, password)) {
 					JSONObject json = new RequestBodyExtracter().extract(request);
-					if (json.get("oldcode") == null || ((String) json.get("oldcode")).length() != 3) {
-						throw new CustomExceptions(CustomExceptions.Exceptions.INVALID_PARAMS);
-					}
+					EndpointValidator stationEndpointValidator = new StationEndpointValidator();
+					stationEndpointValidator.validate(json);
+
 					String oldCode = (String) json.get("oldcode");
 					String newCode = (String) json.get("code");
 					String newName = (String) json.get("name");
+					if(oldCode == null) {
+						throw new CustomExceptions(CustomExceptions.Exceptions.INVALID_PARAMS);
+					}
 					if (!stationsdao.isStationExist(oldCode)) {
 						throw new CustomExceptions(CustomExceptions.Exceptions.STATION_DOESNT_EXIST);
-					}
-					if (newCode != null && newCode.length() != 3) {
-						throw new CustomExceptions(CustomExceptions.Exceptions.INVALID_PARAMS);
 					}
 					if (newName != null && stationsdao.isStationExist(newName)) {
 						throw new CustomExceptions(CustomExceptions.Exceptions.STATION_ALREADY_EXISTS);

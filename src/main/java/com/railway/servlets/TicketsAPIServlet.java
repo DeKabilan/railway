@@ -18,6 +18,8 @@ import com.railway.decorator.ErrorDecorator;
 import com.railway.decorator.TicketDecorator;
 import com.railway.handlers.AuthenticationHandler;
 import com.railway.handlers.TicketHandler;
+import com.railway.handlers.APIValidators.EndpointValidator;
+import com.railway.handlers.APIValidators.TicketEndpointValidator;
 import com.railway.model.Train;
 import com.railway.utils.CustomExceptions;
 import com.railway.utils.RequestBodyExtracter;
@@ -61,6 +63,8 @@ public class TicketsAPIServlet extends HttpServlet {
 				String password = request.getHeader("password");
 				if (authenticationhandler.validateUser(username, password)) {
 					JSONObject json = new RequestBodyExtracter().extract(request);
+					EndpointValidator ticketEndpointValidator = new TicketEndpointValidator();
+					ticketEndpointValidator.validate(json);
 					String trainName = (String) json.get("train");
 					String source = (String) json.get("source");
 					String destination = (String) json.get("destination");
@@ -73,23 +77,9 @@ public class TicketsAPIServlet extends HttpServlet {
 					if (!trainsdao.isTrainExist(trainName)) {
 						throw new CustomExceptions(CustomExceptions.Exceptions.TRAIN_DOESNT_EXIST);
 					}
-					if (!type.equals("AC") && !type.equals("NONAC")) {
-						throw new CustomExceptions(CustomExceptions.Exceptions.INVALID_COMPARTMENT_TYPE);
-					}
 					LocalDate Date = LocalDate.now();
 					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 					String currentDate = Date.format(formatter);
-					try {
-						LocalDate.parse(dateOfTravel, formatter);
-					} catch (Exception e) {
-						throw new CustomExceptions(CustomExceptions.Exceptions.DATE_NOT_VALID);
-					}
-					for (JSONObject passenger : passengers) {
-						if (passenger.get("name") == null || ((String) passenger.get("name")).isEmpty()) {
-							throw new CustomExceptions(CustomExceptions.Exceptions.NAME_IS_EMPTY);
-
-						}
-					}
 					ArrayList<Train> trainList = trainsdao.searchTrain(source, destination, dateOfTravel, currentDate,
 							0);
 					for (Train train : trainList) {
@@ -135,6 +125,7 @@ public class TicketsAPIServlet extends HttpServlet {
 		}
 		
 	}
+	
 	protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		resp.setContentType("application/json");
 		try {

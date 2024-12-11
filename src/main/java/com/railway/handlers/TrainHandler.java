@@ -1,8 +1,5 @@
 package com.railway.handlers;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import com.railway.dao.StationsDAO;
 import com.railway.dao.TrainsDAO;
 import com.railway.model.Train;
@@ -11,19 +8,15 @@ import com.railway.utils.CustomExceptions;
 public class TrainHandler {
 	private final TrainsDAO trains = new TrainsDAO();
 	private final StationsDAO stationsdao = new StationsDAO();
-//	private static Logger logger = Logger.getLogger(TrainHandler.class.getName());
 
 	public Train handleRead(String name) {
-
 		Train train = new Train();
-		;
 		try {
 			if (!trains.isTrainExist(name)) {
 				throw new CustomExceptions(CustomExceptions.Exceptions.TRAIN_DOESNT_EXIST);
 			}
 			return trains.getTrain(name);
 		} catch (CustomExceptions ce) {
-//			logger.log(Level.SEVERE, "exception occurred while reading train details {0}, {1}", new Object[] {});
 			train.setText(ce.getException().getMessage());
 			return train;
 		}
@@ -47,153 +40,114 @@ public class TrainHandler {
 		}
 	}
 
-	public Train handleCreate(String name, String tseatalgo, String source, String destination, String strDeparture,
-			String strArrival, ArrayList<String> periodicity, String intermediate, Integer ACno, Integer ACseats, Integer ACcost,
-			Integer NONACno, Integer NONACseats, Integer NONACcost) {
-
-		Train train = new Train();
-		try {
-
-			if (trains.isTrainExist(name)) {
+	public void handleCreate(Train train) throws CustomExceptions{
+			if(train.getName()==null || train.getSource()==null || train.getDestination()==null || 
+					train.getDeparture()==null || train.getArrival()==null || train.getSeatAlgorithm()==null) {
+				throw new CustomExceptions(CustomExceptions.Exceptions.INVALID_PARAMS);
+			}
+			if (trains.isTrainExist(train.getName())) {
 				throw new CustomExceptions(CustomExceptions.Exceptions.TRAIN_ALREADY_EXISTS);
 			}
 
-			train.setName(name);
-			train.setSeatAlgorithm(tseatalgo);
-
-			if (stationsdao.isStationExist(source)) {
-				train.setSource(source);
-			} else {
+			if (!stationsdao.isStationExist(train.getSource())) {
 				throw new CustomExceptions(CustomExceptions.Exceptions.SOURCE_DOESNT_EXIST);
 			}
 
-			if (stationsdao.isStationExist(destination)) {
-				train.setDestination(destination);
-			} else {
+			if (!stationsdao.isStationExist(train.getDestination())) {
 				throw new CustomExceptions(CustomExceptions.Exceptions.DESTINATION_DOESNT_EXIST);
 			}
 
-			train.setDeparture(strDeparture);
-			train.setArrival(strArrival);
-
-			if(periodicity.size()==0) {
+			if(train.getPeriodicity().size()==0) {
 				throw new CustomExceptions(CustomExceptions.Exceptions.PERIODICITY_IS_EMPTY);
 			}
-			train.setPeriodicity(periodicity);
 
-			String[] listInter = intermediate.split(",");
-			ArrayList<String> itemList = new ArrayList<>(Arrays.asList(listInter));
-			for(String stops : itemList) {
+			for(String stops : train.getIntermediate()) {
 				if(!stationsdao.isStationExist(stops)) {
 					throw new CustomExceptions(CustomExceptions.Exceptions.STOP_DOESNT_EXIST);
 				}
 			}
-			train.setIntermediate(itemList);
-			train.setACCompartmentNo(ACno);
-			train.setACCompartmentSeats(ACseats);
-			train.setACCompartmentCost(ACcost);
-			train.setNONACCompartmentNo(NONACno);
-			train.setNONACCompartmentSeats(NONACseats);
-			train.setNONACCompartmentCost(NONACcost);
-			trains.createTrain(train);
-			train.setText("Train Created");
-			return train;
-		} catch (CustomExceptions ce) {
-			train.setText(ce.getException().getMessage());
-			return train;
-		}
+			trains.createTrain(train);	
 	}
 
-	public Train handleUpdate(String oldtname, String tname, String algorithm, String source, String destination,
-			String strDeparture, String strArrival, ArrayList<String> periodicity, String intermediate, String acNoStr,
-			String acSeatsStr, String acCostStr, String nonAcNoStr, String nonAcSeatsStr, String nonAcCostStr) {
+	public void handleUpdate(String oldtname, Train train) throws CustomExceptions {
+		if(oldtname==null) {
+			throw new CustomExceptions(CustomExceptions.Exceptions.INVALID_PARAMS);
+		}
 		Train trainFromDB = new Train();
-		try {
 			if (!trains.isTrainExist(oldtname)) {
 				throw new CustomExceptions(CustomExceptions.Exceptions.TRAIN_DOESNT_EXIST);
 			}
 			trainFromDB = trains.getTrain(oldtname);
 
-			if (tname != null && !tname.isEmpty()) {
-				trainFromDB.setName(tname);
+			if (train.getName() != null && !train.getName().isEmpty()) {
+				trainFromDB.setName(train.getName());
 			}
 
-			if (algorithm != null && !algorithm.isEmpty()) {
-				trainFromDB.setSeatAlgorithm(algorithm);
+			if (train.getSeatAlgorithm()!=null) {
+				trainFromDB.setSeatAlgorithm(train.getSeatAlgorithm().name());
 			}
 
-			if (source != null && !source.isEmpty()) {
-				if (stationsdao.isStationExist(source)) {
-					trainFromDB.setSource(source);
+			if (train.getSource() != null && !train.getSource().isEmpty()) {
+				if (stationsdao.isStationExist(train.getSource())) {
+					trainFromDB.setSource(train.getSource());
 				} else {
 					throw new CustomExceptions(CustomExceptions.Exceptions.SOURCE_DOESNT_EXIST);
 				}
 			}
 
-			if (destination != null && !destination.isEmpty()) {
-				if (stationsdao.isStationExist(destination)) {
-					trainFromDB.setDestination(destination);
+			if (train.getDestination() != null && !train.getDestination().isEmpty()) {
+				if (stationsdao.isStationExist(train.getDestination())) {
+					trainFromDB.setDestination(train.getDestination());
 				} else {
 					throw new CustomExceptions(CustomExceptions.Exceptions.DESTINATION_DOESNT_EXIST);
 				}
 			}
 
-			if (strDeparture != null && !strDeparture.isEmpty()) {
-				trainFromDB.setDeparture(strDeparture);
+			if (train.getDeparture() != null && !train.getDeparture().isEmpty()) {
+				trainFromDB.setDeparture(train.getDeparture());
 			}
-			if (strArrival != null && !strArrival.isEmpty()) {
-				trainFromDB.setArrival(strArrival);
+			if (train.getArrival()!= null && !train.getArrival().isEmpty()) {
+				trainFromDB.setArrival(train.getArrival());
 
 			}
-			if (acNoStr != null && !acNoStr.isEmpty()) {
-				Integer acNo = Integer.parseInt(acNoStr);
-				trainFromDB.setACCompartmentNo(acNo);
+			if (train.getACCompartmentNo() != -1) {
+				trainFromDB.setACCompartmentNo(train.getACCompartmentNo());
 			}
 
-			if (acSeatsStr != null && !acSeatsStr.isEmpty()) {
-				Integer acSeats = Integer.parseInt(acSeatsStr);
-				trainFromDB.setACCompartmentSeats(acSeats);
+			if (train.getACCompartmentSeats()!=-1) {
+				trainFromDB.setACCompartmentSeats(train.getACCompartmentSeats());
 			}
 
-			if (acCostStr != null && !acCostStr.isEmpty()) {
-				Integer acCost = Integer.parseInt(acCostStr);
-				trainFromDB.setACCompartmentCost(acCost);
+			if (train.getACCompartmentCost() != -1) {
+				trainFromDB.setACCompartmentCost(train.getACCompartmentCost());
 			}
-			if (nonAcNoStr != null && !nonAcNoStr.isEmpty()) {
-				Integer nonAcNo = Integer.parseInt(nonAcNoStr);
-				trainFromDB.setNONACCompartmentNo(nonAcNo);
+			if (train.getNONACCompartmentNo() != -1) {
+				trainFromDB.setNONACCompartmentNo(train.getNONACCompartmentNo());
 			}
-			if (nonAcSeatsStr != null && !nonAcSeatsStr.isEmpty()) {
-				Integer nonAcSeats = Integer.parseInt(nonAcSeatsStr);
-				trainFromDB.setNONACCompartmentSeats(nonAcSeats);
+
+			if (train.getNONACCompartmentSeats()!=-1) {
+				trainFromDB.setNONACCompartmentSeats(train.getNONACCompartmentSeats());
 			}
-			if (nonAcCostStr != null && !nonAcCostStr.isEmpty()) {
-				Integer nonAcCost = Integer.parseInt(nonAcCostStr);
-				trainFromDB.setNONACCompartmentCost(nonAcCost);
+
+			if (train.getNONACCompartmentCost() != -1) {
+				trainFromDB.setNONACCompartmentCost(train.getNONACCompartmentCost());
 			}
-			if (periodicity != null && !periodicity.isEmpty()) {
-				trainFromDB.setPeriodicity(periodicity);
+			if (train.getPeriodicity().size()!=0) {
+				trainFromDB.setPeriodicity(train.getPeriodicity());
 			}
 			
-			if (intermediate != null && !intermediate.isEmpty()) {
-				String[] listInter = intermediate.split(",");
-				ArrayList<String> itemList = new ArrayList<>(Arrays.asList(listInter));
-				for(String stops : itemList) {
+			if (train.getIntermediate().size() != 0) {
+				for(String stops : train.getIntermediate()) {
 					if(!stationsdao.isStationExist(stops)) {
 						throw new CustomExceptions(CustomExceptions.Exceptions.STOP_DOESNT_EXIST);
 					}
 				}
-				trainFromDB.setIntermediate(itemList);
+				trainFromDB.setIntermediate(train.getIntermediate());
 			}
 
 			trainFromDB.setText("Train Updated Successfully");
 			trains.deleteTrain(oldtname);
 			trains.createTrain(trainFromDB);
-			return trainFromDB;
-		} catch (CustomExceptions ce) {
-			trainFromDB.setText(ce.getException().getMessage());
-			return trainFromDB;
-		}
 
 	}
 }

@@ -1,13 +1,15 @@
 package com.railway.handlers.Algorithms;
 
+import com.railway.handlers.Algorithms.SeatTypes.Seat;
+
 public class Ordered implements SeatAllocator{
-	public String allocateSeats(int ticketNo, int compartments, int seatsPerCompartment, String type) {
+	public String allocateSeats(Seat seat) {
 		int currentSeat = 0;
-        for (int i = 1; i <= compartments; i++) {
-            for (int j = 1; j <= seatsPerCompartment; j++) {
+        for (int i = 1; i <= seat.getCompartments(); i++) {
+            for (int j = 1; j <= seat.getSeatsPerCompartment(); j++) {
                 currentSeat++;
-                if (currentSeat == ticketNo) {
-                    return String.format(type+"-"+i+"-"+j);
+                if (currentSeat == seat.getTicketNo()) {
+                    return String.format(seat.getCompartmentPrefix()+"-"+i+"-"+j);
                 }
             }
         }

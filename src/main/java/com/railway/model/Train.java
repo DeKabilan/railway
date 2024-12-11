@@ -125,7 +125,7 @@ public class Train {
 			this.SeatAlgorithm = Algorithms.ORDERED;
 		}
 		else {
-			this.SeatAlgorithm = Algorithms.ORDERED;
+			this.SeatAlgorithm = null;
 		}
 	}
 

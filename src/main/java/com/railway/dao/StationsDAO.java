@@ -57,6 +57,7 @@ public class StationsDAO {
 			ResultSet rs = st
 					.executeQuery("SELECT * FROM Stations WHERE Code = \'" + code + "\' OR Name = \"" + code + "\"");
 			if (rs.next()) {
+				
 				return true;
 			} else
 				return false;
